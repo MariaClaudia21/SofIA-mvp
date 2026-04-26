@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SOFÍA — Tu asistente de salud preventiva</title>
+<meta name="description" content="SOFÍA es tu asistente personal de salud preventiva. Evalúa tu bienestar, agenda tus chequeos y acompaña tu día a día.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --sage:#4A8070;--sage-l:#EBF4F1;--sage-m:#7BAE9E;
+  --lav:#7B6DB0;--lav-l:#F0EDF8;
+  --text:#1A2A2E;--muted:#5A7070;--border:#D0E0DA;
+  --white:#FFFFFF;--bg:#F7FAF9;--r:16px;--rs:10px;
+}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased;}
+.screen{display:none;animation:fi 0.35s ease;}
+.screen.active{display:flex;flex-direction:column;min-height:100vh;}
+@keyframes fi{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+/* AUTH */
+.auth-wrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;max-width:420px;margin:0 auto;width:100%;}
+.logo-mark{font-family:'DM Serif Display',serif;font-size:38px;color:var(--sage);letter-spacing:-1px;margin-bottom:6px;}
+.logo-mark span{color:var(--lav);font-style:italic;}
+.auth-tagline{font-size:13px;color:var(--muted);margin-bottom:36px;font-weight:300;}
+.auth-card{background:var(--white);border:1px solid var(--border);border-radius:20px;padding:28px 24px;width:100%;}
+.auth-title{font-size:20px;font-weight:500;color:var(--text);margin-bottom:4px;}
+.auth-sub{font-size:13px;color:var(--muted);margin-bottom:22px;}
+.field{margin-bottom:14px;}
+.field label{display:block;font-size:11px;font-weight:500;color:var(--muted);margin-bottom:6px;letter-spacing:0.8px;text-transform:uppercase;}
+.field input{width:100%;padding:13px 16px;border:1.5px solid var(--border);border-radius:var(--rs);font-size:15px;font-family:'DM Sans',sans-serif;background:var(--white);color:var(--text);outline:none;transition:border-color 0.2s;-webkit-text-fill-color:var(--text);}
+.field input::placeholder{color:#9BB5B0;}
+.field input:focus{border-color:var(--sage);}
+.field input:-webkit-autofill{-webkit-box-shadow:0 0 0 30px white inset;-webkit-text-fill-color:var(--text);}
+.btn-main{width:100%;padding:14px;background:var(--sage);color:#fff;border:none;border-radius:50px;font-size:15px;font-family:'DM Sans',sans-serif;font-weight:500;cursor:pointer;transition:all 0.2s;margin-top:6px;}
+.btn-main:hover{background:#3d6b5e;transform:translateY(-1px);}
+.btn-main:disabled{opacity:0.5;cursor:not-allowed;transform:none;}
+.divider{display:flex;align-items:center;gap:12px;margin:18px 0;}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border);}
+.divider span{font-size:12px;color:var(--muted);}
+.btn-google{width:100%;padding:13px;background:var(--white);color:var(--text);border:1.5px solid var(--border);border-radius:50px;font-size:14px;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:10px;}
+.btn-google:hover{border-color:var(--sage);background:var(--sage-l);}
+.auth-switch{text-align:center;margin-top:18px;font-size:13px;color:var(--muted);}
+.auth-switch a{color:var(--sage);cursor:pointer;font-weight:500;}
+.msg-box{padding:11px 15px;border-radius:var(--rs);font-size:13px;margin-bottom:14px;display:none;line-height:1.5;}
+.msg-box.error{background:#FDECEA;color:#A02020;border:1px solid #F5C0C0;display:block;}
+.msg-box.success{background:var(--sage-l);color:#2A6050;border:1px solid #B8DDD4;display:block;}
+
+/* NAV */
+.nav{position:sticky;top:0;z-index:100;background:rgba(247,250,249,0.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:12px 20px;display:flex;align-items:center;justify-content:space-between;}
+.nav-logo{font-family:'DM Serif Display',serif;font-size:20px;color:var(--sage);letter-spacing:-0.5px;}
+.nav-logo span{color:var(--lav);font-style:italic;}
+.user-pill{display:flex;align-items:center;gap:8px;background:var(--sage-l);border-radius:50px;padding:5px 14px 5px 6px;border:1px solid #C8DDD8;}
+.user-avatar{width:26px;height:26px;background:var(--sage);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:500;}
+.user-name{font-size:13px;font-weight:500;color:var(--sage);}
+.btn-logout{background:none;border:none;color:var(--muted);font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;padding:4px 10px;border-radius:50px;transition:all 0.2s;}
+.btn-logout:hover{color:var(--text);background:var(--border);}
+
+/* CONTENT */
+.content{flex:1;max-width:580px;margin:0 auto;padding:24px 16px 100px;width:100%;}
+.welcome-hero{text-align:center;padding:28px 0 36px;}
+.welcome-greeting{font-family:'DM Serif Display',serif;font-size:30px;color:var(--text);margin-bottom:8px;line-height:1.2;}
+.welcome-greeting em{color:var(--sage);font-style:italic;}
+.welcome-sub{font-size:14px;color:var(--muted);font-weight:300;}
+
+.score-card{background:var(--sage);border-radius:20px;padding:24px;color:#fff;margin-bottom:14px;position:relative;overflow:hidden;cursor:pointer;transition:transform 0.2s;}
+.score-card:hover{transform:translateY(-2px);}
+.score-card::after{content:'';position:absolute;top:-30px;right:-30px;width:120px;height:120px;background:rgba(255,255,255,0.07);border-radius:50%;}
+.score-label{font-size:11px;opacity:0.75;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;}
+.score-num{font-family:'DM Serif Display',serif;font-size:52px;line-height:1;}
+.score-desc{font-size:13px;opacity:0.85;margin-top:6px;}
+.score-progress{background:rgba(255,255,255,0.2);border-radius:50px;height:4px;margin-top:14px;}
+.score-fill{height:100%;border-radius:50px;background:#fff;transition:width 1s ease;}
+
+.cards-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+.mini-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:16px;}
+.mini-label{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:8px;}
+.mini-val{font-size:22px;font-weight:500;color:var(--text);}
+
+.section-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:18px;margin-bottom:14px;}
+.section-label{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:12px;}
+.rec-item{display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);font-size:13px;line-height:1.5;color:var(--text);}
+.rec-item:last-child{border-bottom:none;}
+.rec-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:5px;}
+
+.btn-assess{width:100%;padding:14px;background:var(--sage);color:#fff;border:none;border-radius:50px;font-size:15px;font-family:'DM Sans',sans-serif;font-weight:500;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:8px;}
+.btn-assess:hover{background:#3d6b5e;}
+
+/* ASSESS */
+.assess-wrap{max-width:520px;margin:0 auto;padding:16px 16px 100px;width:100%;}
+.prog-wrap{background:var(--border);border-radius:50px;height:3px;margin-bottom:28px;overflow:hidden;}
+.prog-fill{height:100%;background:var(--sage);border-radius:50px;transition:width 0.4s ease;}
+.step-ind{font-size:12px;color:var(--muted);margin-bottom:6px;}
+.q-title{font-family:'DM Serif Display',serif;font-size:26px;color:var(--text);margin-bottom:6px;}
+.q-sub{font-size:14px;color:var(--muted);margin-bottom:24px;font-weight:300;}
+.opt-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.opt-btn{padding:13px 14px;border:1.5px solid var(--border);border-radius:var(--rs);background:var(--white);font-size:13px;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all 0.2s;text-align:left;color:var(--text);display:flex;align-items:center;gap:8px;}
+.opt-btn:hover{border-color:var(--sage-m);background:var(--sage-l);}
+.opt-btn.sel{border-color:var(--sage);background:var(--sage-l);color:#1A4A3A;font-weight:500;}
+.check-list{display:flex;flex-direction:column;gap:8px;}
+.check-item{display:flex;align-items:center;gap:12px;padding:12px 14px;border:1.5px solid var(--border);border-radius:var(--rs);cursor:pointer;background:var(--white);transition:all 0.2s;font-size:14px;color:var(--text);}
+.check-item:hover{border-color:var(--sage-m);}
+.check-item.chk{border-color:var(--sage);background:var(--sage-l);color:#1A4A3A;}
+.fgroup{margin-bottom:16px;}
+.flabel{display:block;font-size:11px;font-weight:500;color:var(--muted);margin-bottom:6px;letter-spacing:0.8px;text-transform:uppercase;}
+.finput{width:100%;padding:13px 16px;border:1.5px solid var(--border);border-radius:var(--rs);font-size:15px;font-family:'DM Sans',sans-serif;background:var(--white);color:var(--text);outline:none;transition:border-color 0.2s;}
+.finput:focus{border-color:var(--sage);}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.nav-btns{display:flex;gap:8px;margin-top:24px;}
+.btn-back{background:transparent;border:1.5px solid var(--border);color:var(--muted);padding:13px 18px;border-radius:50px;font-size:14px;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all 0.2s;}
+.btn-back:hover{border-color:var(--sage);color:var(--sage);}
+.btn-next{flex:1;background:var(--sage);color:#fff;border:none;padding:13px 24px;border-radius:50px;font-size:15px;font-family:'DM Sans',sans-serif;font-weight:500;cursor:pointer;transition:all 0.2s;}
+.btn-next:hover{background:#3d6b5e;}
+
+/* CHAT */
+.chat-outer{display:flex;flex-direction:column;flex:1;}
+.chat-head{padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;background:var(--white);}
+.s-avatar{width:38px;height:38px;background:var(--sage);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'DM Serif Display',serif;color:#fff;font-size:15px;flex-shrink:0;}
+.chat-msgs{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;background:var(--bg);min-height:300px;max-height:calc(100vh - 200px);}
+.msg{max-width:80%;padding:11px 15px;border-radius:16px;font-size:14px;line-height:1.6;}
+.msg.sofia{background:var(--white);border:1px solid var(--border);align-self:flex-start;border-bottom-left-radius:4px;color:var(--text);}
+.msg.user{background:var(--sage);color:#fff;align-self:flex-end;border-bottom-right-radius:4px;}
+.dots{display:flex;gap:4px;padding:4px 0;}
+.dots span{width:6px;height:6px;background:var(--sage-m);border-radius:50%;animation:bounce 1.2s infinite;}
+.dots span:nth-child(2){animation-delay:0.2s;}
+.dots span:nth-child(3){animation-delay:0.4s;}
+@keyframes bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-5px)}}
+.chat-in{padding:10px 12px;background:var(--white);border-top:1px solid var(--border);display:flex;gap:8px;align-items:center;}
+.chat-field{flex:1;padding:10px 14px;border:1.5px solid var(--border);border-radius:50px;font-size:14px;font-family:'DM Sans',sans-serif;outline:none;background:var(--bg);color:var(--text);transition:border-color 0.2s;}
+.chat-field::placeholder{color:#9BB5B0;}
+.chat-field:focus{border-color:var(--sage);}
+.chat-send{width:38px;height:38px;background:var(--sage);border:none;border-radius:50%;color:#fff;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:all 0.2s;flex-shrink:0;}
+.chat-send:hover{background:#3d6b5e;}
+
+/* BOTTOM NAV */
+.bnav{position:fixed;bottom:0;left:0;right:0;background:rgba(247,250,249,0.97);backdrop-filter:blur(12px);border-top:1px solid var(--border);display:flex;justify-content:space-around;padding:8px 0 16px;z-index:99;}
+.bnav-btn{display:flex;flex-direction:column;align-items:center;gap:2px;background:none;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:10px;color:var(--muted);padding:6px 16px;border-radius:var(--rs);transition:all 0.2s;}
+.bnav-btn.active{color:var(--sage);}
+.bnav-icon{font-size:20px;}
+
+.gen-wrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;text-align:center;}
+.pulse{width:72px;height:72px;border-radius:50%;background:var(--sage-l);border:2px solid var(--sage-m);margin:0 auto 24px;display:flex;align-items:center;justify-content:center;font-size:28px;animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{transform:scale(1);box-shadow:0 0 0 0 rgba(123,174,158,0.3)}50%{transform:scale(1.04);box-shadow:0 0 0 10px rgba(123,174,158,0)}}
+.gen-title{font-family:'DM Serif Display',serif;font-size:22px;color:var(--text);margin-bottom:8px;}
+.gen-sub{font-size:14px;color:var(--muted);font-weight:300;}
+.tag{display:inline-block;font-size:11px;padding:3px 10px;border-radius:50px;font-weight:500;}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="s-login" class="screen active">
+  <div class="auth-wrap">
+    <div class="logo-mark">SOF<span>Í</span>A</div>
+    <div class="auth-tagline">Tu salud, organizada de forma inteligente.</div>
+    <div class="auth-card">
+      <div class="auth-title">Bienvenida de nuevo</div>
+      <div class="auth-sub">Inicia sesión para continuar</div>
+      <div class="msg-box" id="login-msg"></div>
+      <div class="field"><label>Correo electrónico</label><input type="email" id="login-email" placeholder="tu@correo.com" autocomplete="email"></div>
+      <div class="field"><label>Contraseña</label><input type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"></div>
+      <button class="btn-main" id="login-btn" onclick="doLogin()">Iniciar sesión</button>
+      <div class="divider"><span>o</span></div>
+      <button class="btn-google" onclick="doGoogle()">
+        <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+        Continuar con Google
+      </button>
+    </div>
+    <div class="auth-switch">¿Primera vez? <a onclick="showRegister()">Crear cuenta</a></div>
+  </div>
+</div>
+
+<!-- REGISTER -->
+<div id="s-register" class="screen">
+  <div class="auth-wrap">
+    <div class="logo-mark">SOF<span>Í</span>A</div>
+    <div class="auth-tagline">Tu salud, organizada de forma inteligente.</div>
+    <div class="auth-card">
+      <div class="auth-title">Crear tu cuenta</div>
+      <div class="auth-sub">Empieza tu camino de salud preventiva</div>
+      <div class="msg-box" id="reg-msg"></div>
+      <div class="field"><label>Tu nombre</label><input type="text" id="reg-name" placeholder="¿Cómo te llamas?" autocomplete="name"></div>
+      <div class="field"><label>Correo electrónico</label><input type="email" id="reg-email" placeholder="tu@correo.com" autocomplete="email"></div>
+      <div class="field"><label>Contraseña</label><input type="password" id="reg-pass" placeholder="Mínimo 6 caracteres" autocomplete="new-password" onkeydown="if(event.key==='Enter')doRegister()"></div>
+      <button class="btn-main" id="reg-btn" onclick="doRegister()">Crear cuenta</button>
+      <div class="divider"><span>o</span></div>
+      <button class="btn-google" onclick="doGoogle()">
+        <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+        Continuar con Google
+      </button>
+    </div>
+    <div class="auth-switch">¿Ya tienes cuenta? <a onclick="showLogin()">Iniciar sesión</a></div>
+  </div>
+</div>
+
+<!-- VERIFY -->
+<div id="s-verify" class="screen">
+  <div class="auth-wrap">
+    <div class="logo-mark">SOF<span>Í</span>A</div>
+    <div class="auth-card" style="text-align:center;">
+      <div style="font-size:40px;margin-bottom:16px;">📬</div>
+      <div class="auth-title">Revisa tu correo</div>
+      <div class="auth-sub" id="verify-txt">Te enviamos un enlace de confirmación.</div>
+      <button class="btn-main" style="margin-top:16px;" onclick="showLogin()">Ya confirmé → Iniciar sesión</button>
+    </div>
+  </div>
+</div>
+
+<!-- HOME -->
+<div id="s-home" class="screen">
+  <div class="nav">
+    <div class="nav-logo">SOF<span>Í</span>A</div>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <div class="user-pill"><div class="user-avatar" id="home-avatar">?</div><div class="user-name" id="home-uname">...</div></div>
+      <button class="btn-logout" onclick="doLogout()">Salir</button>
+    </div>
+  </div>
+  <div class="content">
+    <div class="welcome-hero">
+      <div class="welcome-greeting">Hola, <em id="home-fname">amiga</em> 👋</div>
+      <div class="welcome-sub" id="home-sub">Bienvenida a tu espacio de salud preventiva</div>
+    </div>
+    <div id="no-assess-view">
+      <div class="section-card" style="text-align:center;padding:32px 20px;">
+        <div style="font-size:40px;margin-bottom:12px;">🌿</div>
+        <div style="font-size:17px;font-weight:500;margin-bottom:8px;">Empieza tu evaluación</div>
+        <div style="font-size:13px;color:var(--muted);margin-bottom:20px;font-weight:300;line-height:1.6;">Toma 5 minutos. SOFÍA analiza tu perfil y crea un plan de salud preventiva personalizado para ti.</div>
+        <button class="btn-assess" onclick="goApp('assess')">Comenzar evaluación →</button>
+      </div>
+    </div>
+    <div id="dash-view" style="display:none;">
+      <div class="score-card">
+        <div class="score-label">Puntaje preventivo</div>
+        <div class="score-num" id="d-score">--</div>
+        <div class="score-desc" id="d-msg">Tu plan personalizado</div>
+        <div class="score-progress"><div class="score-fill" id="d-bar" style="width:0%"></div></div>
+      </div>
+      <div class="cards-grid">
+        <div class="mini-card"><div class="mini-label">IMC</div><div class="mini-val" id="d-imc">--</div><div id="d-imc-tag" style="margin-top:6px;"></div></div>
+        <div class="mini-card"><div class="mini-label">Próximo chequeo</div><div style="font-size:14px;font-weight:500;color:var(--sage);margin-top:4px;" id="d-chequeo">--</div></div>
+      </div>
+      <div class="section-card">
+        <div class="section-label">Recomendaciones de SOFÍA</div>
+        <div id="d-recs"></div>
+      </div>
+      <button class="btn-assess" onclick="goApp('chat')" style="margin-top:4px;">Hablar con SOFÍA 💬</button>
+    </div>
+  </div>
+  <div class="bnav">
+    <button class="bnav-btn active" onclick="goApp('home')"><span class="bnav-icon">🏠</span>Inicio</button>
+    <button class="bnav-btn" onclick="goApp('assess')"><span class="bnav-icon">📋</span>Evaluación</button>
+    <button class="bnav-btn" onclick="goApp('chat')"><span class="bnav-icon">💬</span>SOFÍA</button>
+  </div>
+</div>
+
+<!-- ASSESS -->
+<div id="s-assess" class="screen">
+  <div class="nav"><div class="nav-logo">SOF<span>Í</span>A</div><button class="btn-logout" onclick="goApp('home')">← Volver</button></div>
+  <div class="assess-wrap">
+    <div class="step-ind">Paso <span id="as-step">1</span> de 5</div>
+    <div class="prog-wrap"><div class="prog-fill" id="as-prog" style="width:20%"></div></div>
+    <div id="as1">
+      <div class="q-title">Cuéntanos sobre ti</div>
+      <div class="q-sub">Para personalizar tus recomendaciones.</div>
+      <div class="frow">
+        <div class="fgroup"><label class="flabel">Edad</label><input class="finput" id="a-edad" type="number" placeholder="28" min="16" max="90"></div>
+        <div class="fgroup"><label class="flabel">Sexo biológico</label><select class="finput" id="a-sexo" style="color:var(--text);"><option value="">Seleccionar</option><option value="femenino">Femenino</option><option value="masculino">Masculino</option></select></div>
+      </div>
+      <div class="frow">
+        <div class="fgroup"><label class="flabel">Peso (kg)</label><input class="finput" id="a-peso" type="number" placeholder="60"></div>
+        <div class="fgroup"><label class="flabel">Estatura (cm)</label><input class="finput" id="a-est" type="number" placeholder="165"></div>
+      </div>
+      <div class="nav-btns"><button class="btn-next" onclick="asNext(1)">Continuar →</button></div>
+    </div>
+    <div id="as2" style="display:none;">
+      <div class="q-title">Hábitos diarios</div>
+      <div class="q-sub">Tu rutina nos dice mucho.</div>
+      <div class="fgroup"><label class="flabel">Actividad física</label>
+        <div class="opt-grid">
+          <button class="opt-btn" data-v="sedentario" onclick="selOpt(this,'act')">🪑 Sedentario</button>
+          <button class="opt-btn" data-v="leve" onclick="selOpt(this,'act')">🚶 Leve (1-2/sem)</button>
+          <button class="opt-btn" data-v="moderado" onclick="selOpt(this,'act')">🏃 Moderado (3-4x)</button>
+          <button class="opt-btn" data-v="intenso" onclick="selOpt(this,'act')">💪 Intenso (5+)</button>
+        </div>
+      </div>
+      <div class="fgroup" style="margin-top:16px;"><label class="flabel">Calidad del sueño</label>
+        <div class="opt-grid">
+          <button class="opt-btn" data-v="malo" onclick="selOpt(this,'sue')">😴 Malo (&lt;6h)</button>
+          <button class="opt-btn" data-v="regular" onclick="selOpt(this,'sue')">😐 Regular (6-7h)</button>
+          <button class="opt-btn" data-v="bueno" onclick="selOpt(this,'sue')">😊 Bueno (7-8h)</button>
+          <button class="opt-btn" data-v="excelente" onclick="selOpt(this,'sue')">✨ Excelente (8h+)</button>
+        </div>
+      </div>
+      <div class="nav-btns"><button class="btn-back" onclick="asPrev(2)">← Atrás</button><button class="btn-next" onclick="asNext(2)">Continuar →</button></div>
+    </div>
+    <div id="as3" style="display:none;">
+      <div class="q-title">Bienestar mental</div>
+      <div class="q-sub">El estrés impacta directamente tu salud física.</div>
+      <div class="fgroup"><label class="flabel">Nivel de estrés</label>
+        <div class="opt-grid">
+          <button class="opt-btn" data-v="bajo" onclick="selOpt(this,'str')">😌 Bajo</button>
+          <button class="opt-btn" data-v="moderado" onclick="selOpt(this,'str')">😶 Moderado</button>
+          <button class="opt-btn" data-v="alto" onclick="selOpt(this,'str')">😰 Alto</button>
+          <button class="opt-btn" data-v="muy_alto" onclick="selOpt(this,'str')">🤯 Muy alto</button>
+        </div>
+      </div>
+      <div class="nav-btns"><button class="btn-back" onclick="asPrev(3)">← Atrás</button><button class="btn-next" onclick="asNext(3)">Continuar →</button></div>
+    </div>
+    <div id="as4" style="display:none;">
+      <div class="q-title">Antecedentes familiares</div>
+      <div class="q-sub">Confidencial. Solo para personalizar tu plan.</div>
+      <div class="check-list">
+        <div class="check-item" onclick="togChk(this,'diabetes')">🩸 Diabetes tipo 2</div>
+        <div class="check-item" onclick="togChk(this,'hipertension')">❤️ Hipertensión arterial</div>
+        <div class="check-item" onclick="togChk(this,'cancer')">🎗️ Cáncer (cualquier tipo)</div>
+        <div class="check-item" onclick="togChk(this,'cardio')">🫀 Enfermedades cardiovasculares</div>
+        <div class="check-item" onclick="togChk(this,'ninguno')">✅ Ninguno</div>
+      </div>
+      <div class="nav-btns"><button class="btn-back" onclick="asPrev(4)">← Atrás</button><button class="btn-next" onclick="asNext(4)">Continuar →</button></div>
+    </div>
+    <div id="as5" style="display:none;">
+      <div class="q-title">Tu objetivo principal</div>
+      <div class="q-sub">¿En qué quieres enfocarte?</div>
+      <div class="opt-grid">
+        <button class="opt-btn" data-v="prevencion" onclick="selOpt(this,'obj')">🛡️ Prevención general</button>
+        <button class="opt-btn" data-v="energia" onclick="selOpt(this,'obj')">⚡ Más energía</button>
+        <button class="opt-btn" data-v="peso" onclick="selOpt(this,'obj')">⚖️ Manejo de peso</button>
+        <button class="opt-btn" data-v="estres" onclick="selOpt(this,'obj')">🧘 Reducir estrés</button>
+      </div>
+      <div class="nav-btns"><button class="btn-back" onclick="asPrev(5)">← Atrás</button><button class="btn-next" onclick="submitAssess()">Ver mi evaluación →</button></div>
+    </div>
+  </div>
+  <div class="bnav">
+    <button class="bnav-btn" onclick="goApp('home')"><span class="bnav-icon">🏠</span>Inicio</button>
+    <button class="bnav-btn active"><span class="bnav-icon">📋</span>Evaluación</button>
+    <button class="bnav-btn" onclick="goApp('chat')"><span class="bnav-icon">💬</span>SOFÍA</button>
+  </div>
+</div>
+
+<!-- GENERATING -->
+<div id="s-gen" class="screen">
+  <div class="gen-wrap">
+    <div class="pulse">🌿</div>
+    <div class="gen-title">SOFÍA está analizando tu perfil...</div>
+    <div class="gen-sub">Generando tus recomendaciones personalizadas</div>
+  </div>
+</div>
+
+<!-- CHAT -->
+<div id="s-chat" class="screen">
+  <div class="nav"><div class="nav-logo">SOF<span>Í</span>A</div><button class="btn-logout" onclick="goApp('home')">← Volver</button></div>
+  <div class="chat-outer">
+    <div class="chat-head">
+      <div class="s-avatar">S</div>
+      <div><div style="font-weight:500;font-size:14px;color:var(--text);">SOFÍA</div><div style="font-size:12px;color:var(--muted);">Asistente de salud preventiva</div></div>
+    </div>
+    <div class="chat-msgs" id="chat-msgs"></div>
+    <div class="chat-in">
+      <input class="chat-field" id="chat-in" placeholder="Pregúntale algo a SOFÍA..." onkeydown="if(event.key==='Enter')sendMsg()">
+      <button class="chat-send" onclick="sendMsg()">↑</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SURL='https://rlypqzwuucfrmhmqdnxp.supabase.co';
+const SKEY='sb_publishable_0hVEgIpm8-EaOaNeGjuPVQ_1NhO4On0';
+const sb=supabase.createClient(SURL,SKEY);
+let currentUser=null,userProfile={},chatHist=[];
+const sel={},chks=[];
+
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo(0,0);}
+function showLogin(){show('s-login');}
+function showRegister(){show('s-register');}
+function showMsg(el,t,type){el.textContent=t;el.className='msg-box '+type;}
+
+async function doLogin(){
+  const email=document.getElementById('login-email').value.trim();
+  const pass=document.getElementById('login-pass').value;
+  const msg=document.getElementById('login-msg');
+  const btn=document.getElementById('login-btn');
+  if(!email||!pass){showMsg(msg,'Completa todos los campos.','error');return;}
+  btn.disabled=true;btn.textContent='Iniciando...';
+  const {data,error}=await sb.auth.signInWithPassword({email,password:pass});
+  btn.disabled=false;btn.textContent='Iniciar sesión';
+  if(error){showMsg(msg,error.message.includes('Invalid')?'Correo o contraseña incorrectos.':error.message,'error');return;}
+  await loadUser(data.user);
+}
+
+async function doRegister(){
+  const name=document.getElementById('reg-name').value.trim();
+  const email=document.getElementById('reg-email').value.trim();
+  const pass=document.getElementById('reg-pass').value;
+  const msg=document.getElementById('reg-msg');
+  const btn=document.getElementById('reg-btn');
+  if(!name||!email||!pass){showMsg(msg,'Completa todos los campos.','error');return;}
+  if(pass.length<6){showMsg(msg,'La contraseña debe tener al menos 6 caracteres.','error');return;}
+  btn.disabled=true;btn.textContent='Creando cuenta...';
+  const {data,error}=await sb.auth.signUp({email,password:pass,options:{data:{full_name:name}}});
+  btn.disabled=false;btn.textContent='Crear cuenta';
+  if(error){showMsg(msg,error.message,'error');return;}
+  document.getElementById('verify-txt').textContent=`Te enviamos un enlace a ${email}. Confírmalo y luego inicia sesión.`;
+  show('s-verify');
+}
+
+async function doGoogle(){await sb.auth.signInWithOAuth({provider:'google',options:{redirectTo:window.location.origin}});}
+async function doLogout(){await sb.auth.signOut();currentUser=null;userProfile={};showLogin();}
+
+async function loadUser(user){
+  currentUser=user;
+  const name=user.user_metadata?.full_name||user.email.split('@')[0];
+  const fname=name.split(' ')[0];
+  document.getElementById('home-fname').textContent=fname;
+  document.getElementById('home-uname').textContent=fname;
+  document.getElementById('home-avatar').textContent=fname[0].toUpperCase();
+  document.getElementById('home-sub').textContent=`Bienvenida de nuevo, ${fname} 🌿`;
+  const {data}=await sb.from('sofia_profiles').select('*').eq('user_id',user.id).single();
+  if(data){userProfile=data;showDash(data);}
+  else{document.getElementById('no-assess-view').style.display='block';document.getElementById('dash-view').style.display='none';}
+  initChat(fname);
+  show('s-home');
+}
+
+function showDash(p){
+  document.getElementById('no-assess-view').style.display='none';
+  document.getElementById('dash-view').style.display='block';
+  document.getElementById('d-score').textContent=p.score||'--';
+  document.getElementById('d-bar').style.width=(p.score||0)+'%';
+  document.getElementById('d-msg').textContent=p.msg||'Tu plan personalizado';
+  if(p.imc){
+    document.getElementById('d-imc').textContent=parseFloat(p.imc).toFixed(1);
+    let t='',c='';
+    if(p.imc<18.5){t='Bajo peso';c='#B87A00';}
+    else if(p.imc<=24.9){t='Normal ✓';c='#1E6040';}
+    else if(p.imc<=29.9){t='Sobrepeso';c='#B87A00';}
+    else{t='Obesidad';c='#A02020';}
+    document.getElementById('d-imc-tag').innerHTML=`<span class="tag" style="background:${c}18;color:${c};border:1px solid ${c}30;">${t}</span>`;
+  }
+  const cuando=p.chequeo==='reciente'?'En 12 meses':p.chequeo==='hace2'?'Próximamente':'¡Ahora mismo!';
+  document.getElementById('d-chequeo').textContent=cuando;
+  const cols=['#1E6040','#185FA5','#5A4D8A','#B87A00'];
+  const recs=p.recomendaciones||[];
+  document.getElementById('d-recs').innerHTML=recs.map((r,i)=>`<div class="rec-item"><div class="rec-dot" style="background:${cols[i%4]};"></div><span>${r}</span></div>`).join('');
+}
+
+function goApp(s){show('s-'+s);}
+function selOpt(btn,key){btn.parentElement.querySelectorAll('.opt-btn').forEach(b=>b.classList.remove('sel'));btn.classList.add('sel');sel[key]=btn.getAttribute('data-v');}
+function togChk(el,val){el.classList.toggle('chk');const i=chks.indexOf(val);if(i>-1)chks.splice(i,1);else chks.push(val);}
+
+function asNext(n){
+  if(n===1){if(!document.getElementById('a-edad').value||!document.getElementById('a-sexo').value||!document.getElementById('a-peso').value||!document.getElementById('a-est').value){alert('Por favor completa todos los campos.');return;}}
+  document.getElementById('as'+n).style.display='none';
+  document.getElementById('as'+(n+1)).style.display='block';
+  document.getElementById('as-step').textContent=n+1;
+  document.getElementById('as-prog').style.width=(((n+1)/5)*100)+'%';
+}
+function asPrev(n){
+  document.getElementById('as'+n).style.display='none';
+  document.getElementById('as'+(n-1)).style.display='block';
+  document.getElementById('as-step').textContent=n-1;
+  document.getElementById('as-prog').style.width=(((n-1)/5)*100)+'%';
+}
+
+async function submitAssess(){
+  const edad=parseInt(document.getElementById('a-edad').value)||0;
+  const sexo=document.getElementById('a-sexo').value;
+  const peso=parseFloat(document.getElementById('a-peso').value)||0;
+  const est=parseFloat(document.getElementById('a-est').value)||0;
+  const imc=est>0?peso/Math.pow(est/100,2):null;
+  const act=sel['act']||'',sue=sel['sue']||'',str=sel['str']||'',obj=sel['obj']||'';
+  let score=60;
+  if(act==='moderado')score+=8;else if(act==='intenso')score+=12;else if(act==='leve')score+=4;else score-=5;
+  if(sue==='bueno')score+=6;else if(sue==='excelente')score+=10;else if(sue==='malo')score-=8;
+  if(str==='bajo')score+=6;else if(str==='alto')score-=6;else if(str==='muy_alto')score-=10;
+  if(imc&&imc>=18.5&&imc<=24.9)score+=5;
+  score=Math.min(100,Math.max(20,Math.round(score)));
+  goApp('gen');
+  const name=currentUser.user_metadata?.full_name||currentUser.email.split('@')[0];
+  const fname=name.split(' ')[0];
+  const prompt=`Eres SOFÍA, asistente de salud preventiva. Genera 4 recomendaciones breves (máx 18 palabras c/u) para: Nombre: ${fname}, Edad: ${edad}, Sexo: ${sexo}, Actividad: ${act}, Sueño: ${sue}, Estrés: ${str}, Antecedentes: ${chks.join(', ')||'ninguno'}, Objetivo: ${obj}, IMC: ${imc?imc.toFixed(1):'N/A'}. Responde SOLO JSON: {"recomendaciones":["r1","r2","r3","r4"],"mensaje":"frase motivadora para ${fname} (máx 10 palabras)"}`;
+  let recs=[],msg='Tu salud es tu mayor inversión.';
+  try{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:400,messages:[{role:'user',content:prompt}]})});
+    const d=await r.json();
+    const parsed=JSON.parse(d.content[0].text.replace(/```json|```/g,'').trim());
+    recs=parsed.recomendaciones||[];msg=parsed.mensaje||msg;
+  }catch(e){recs=['Agenda tu chequeo anual de medicina general.','Camina 30 min al día, 4 veces por semana.','Practica respiración profunda para el estrés.','Aumenta tu consumo de agua a 2L diarios.'];}
+  const profileData={user_id:currentUser.id,score,imc:imc?parseFloat(imc.toFixed(1)):null,edad,sexo,peso,estatura:est,actividad:act,sueno:sue,estres:str,antecedentes:chks,objetivo:obj,recomendaciones:recs,msg,updated_at:new Date().toISOString()};
+  await sb.from('sofia_profiles').upsert(profileData,{onConflict:'user_id'});
+  userProfile=profileData;showDash(profileData);goApp('home');
+}
+
+function initChat(fname){
+  chatHist=[];
+  document.getElementById('chat-msgs').innerHTML=`<div class="msg sofia">Hola ${fname}! Soy SOFÍA, tu asistente de salud preventiva 🌿 ¿En qué te puedo ayudar hoy?</div>`;
+}
+
+async function sendMsg(){
+  const inp=document.getElementById('chat-in');
+  const text=inp.value.trim();if(!text)return;inp.value='';
+  const msgs=document.getElementById('chat-msgs');
+  msgs.innerHTML+=`<div class="msg user">${text}</div>`;
+  const tid='t'+Date.now();
+  msgs.innerHTML+=`<div class="msg sofia" id="${tid}"><div class="dots"><span></span><span></span><span></span></div></div>`;
+  msgs.scrollTop=msgs.scrollHeight;
+  chatHist.push({role:'user',content:text});
+  const fname=(currentUser?.user_metadata?.full_name||'').split(' ')[0];
+  const sys=`Eres SOFÍA, asistente cálida de salud preventiva para colombianos 25-35 años. Das consejos de medicina preventiva y hábitos saludables. SIEMPRE recomiendas consultar profesionales para diagnósticos. Respondes en español, concisa (máx 3 párrafos), cálida y motivadora.${fname?' El usuario se llama '+fname+'.':''}${userProfile.score?' Su puntaje preventivo es '+userProfile.score+'/100.':''}`;
+  let reply='Tuve un problema de conexión. ¡Inténtalo de nuevo!';
+  try{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:400,system:sys,messages:chatHist})});
+    const d=await r.json();reply=d.content[0].text;
+  }catch(e){}
+  chatHist.push({role:'assistant',content:reply});
+  document.getElementById(tid)?.remove();
+  msgs.innerHTML+=`<div class="msg sofia">${reply}</div>`;
+  msgs.scrollTop=msgs.scrollHeight;
+}
+
+(async()=>{
+  const {data:{session}}=await sb.auth.getSession();
+  if(session?.user)await loadUser(session.user);
+  else showLogin();
+  sb.auth.onAuthStateChange(async(_,session)=>{if(session?.user&&!currentUser)await loadUser(session.user);});
+})();
+</script>
+</body>
+</html>
