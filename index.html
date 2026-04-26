@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SOFÍA — Tu asistente de salud preventiva</title>
+<meta name="description" content="SOFÍA es tu asistente personal de salud preventiva. Evalúa tu bienestar, agenda tus chequeos y acompaña tu día a día.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --sage:#4A8070;--sage-l:#EBF4F1;--sage-m:#7BAE9E;
+  --lav:#7B6DB0;--lav-l:#F0EDF8;
+  --teal:#2A9D8F;--teal-l:#E8F7F6;
+  --text:#1A2A2E;--muted:#5A7070;--border:#D0E0DA;
+  --white:#FFFFFF;--bg:#F7FAF9;--r:16px;--rs:10px;
+}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased;}
+.screen{display:none;animation:fi 0.35s ease;}
+.screen.active{display:flex;flex-direction:column;min-height:100vh;}
+@keyframes fi{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+/* LOGO SVG */
+.logo-svg{display:flex;align-items:center;gap:8px;}
+.logo-svg svg{width:32px;height:32px;}
+.logo-text{font-family:'DM Serif Display',serif;font-size:22px;color:var(--sage);letter-spacing:-0.5px;}
+.logo-text span{color:var(--lav);font-style:italic;}
+
+.logo-mark-lg{display:flex;flex-direction:column;align-items:center;gap:4px;margin-bottom:8px;}
+.logo-mark-lg svg{width:52px;height:52px;}
+.logo-mark-lg .lt{font-family:'DM Serif Display',serif;font-size:36px;color:var(--sage);letter-spacing:-1px;}
+.logo-mark-lg .lt span{color:var(--lav);font-style:italic;}
+
+/* AUTH */
+.auth-wrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;max-width:420px;margin:0 auto;width:100%;}
+.auth-tagline{font-size:13px;color:var(--muted);margin-bottom:32px;font-weight:300;text-align:center;}
+.auth-card{background:var(--white);border:1px solid var(--border);border-radius:20px;padding:28px 24px;width:100%;}
+.auth-title{font-size:20px;font-weight:500;color:var(--text);margin-bottom:4px;}
+.auth-sub{font-size:13px;color:var(--muted);margin-bottom:22px;}
+.field{margin-bottom:14px;}
+.field label{display:block;font-size:11px;font-weight:500;color:var(--muted);margin-bottom:6px;letter-spacing:0.8px;text-transform:uppercase;}
+.field input{width:100%;padding:13px 16px;border:1.5px solid var(--border);border-radius:var(--rs);font-size:15px;font-family:'DM Sans',sans-serif;background:var(--white);color:var(--text);outline:none;transition:border-color 0.2s;-webkit-text-fill-color:var(--text);}
+.field input::placeholder{color:#9BB5B0;}
+.field input:focus{border-color:var(--sage);}
+.field input:-webkit-autofill{-webkit-box-shadow:0 0 0 30px white inset;-webkit-text-fill-color:var(--text);}
+.btn-main{width:100%;padding:14px;background:var(--sage);color:#fff;border:none;border-radius:50px;font-size:15px;font-family:'DM Sans',sans-serif;font-weight:500;cursor:pointer;transition:all 0.2s;margin-top:6px;}
+.btn-main:hover{background:#3d6b5e;transform:translateY(-1px);}
+.btn-main:disabled{opacity:0.5;cursor:not-allowed;transform:none;}
+.divider{display:flex;align-items:center;gap:12px;margin:18px 0;}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border);}
+.divider span{font-size:12px;color:var(--muted);}
+.btn-google{width:100%;padding:13px;background:var(--white);color:var(--text);border:1.5px solid var(--border);border-radius:50px;font-size:14px;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:10px;}
+.btn-google:hover{border-color:var(--sage);background:var(--sage-l);}
+.auth-switch{text-align:center;margin-top:18px;font-size:13px;color:var(--muted);}
+.auth-switch a{color:var(--sage);cursor:pointer;font-weight:500;}
+.msg-box{padding:11px 15px;border-radius:var(--rs);font-size:13px;margin-bottom:14px;display:none;line-height:1.5;}
+.msg-box.error{background:#FDECEA;color:#A02020;border:1px solid #F5C0C0;display:block;}
+.msg-box.success{background:var(--sage-l);color:#2A6050;border:1px solid #B8DDD4;display:block;}
+
+/* NAV */
+.nav{position:sticky;top:0;z-index:100;background:rgba(247,250,249,0.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:12px 20px;display:flex;align-items:center;justify-content:space-between;}
+.user-pill{display:flex;align-items:center;gap:8px;background:var(--sage-l);border-radius:50px;padding:5px 14px 5px 6px;border:1px solid #C8DDD8;}
+.user-avatar{width:28px;height:28px;background:var(--sage);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:500;}
+.user-name{font-size:13px;font-weight:500;color:var(--sage);}
+.btn-logout{background:none;border:none;color:var(--muted);font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;padding:4px 10px;border-radius:50px;transition:all 0.2s;}
+.btn-logout:hover{color:var(--text);background:var(--border);}
+
+/* CONTENT */
+.content{flex:1;max-width:600px;margin:0 auto;padding:20px 16px 100px;width:100%;}
+.welcome-hero{padding:24px 0 28px;}
+.welcome-greeting{font-family:'DM Serif Display',serif;font-size:28px;color:var(--text);margin-bottom:6px;line-height:1.2;}
+.welcome-greeting em{color:var(--sage);font-style:italic;}
+.welcome-sub{font-size:14px;color:var(--muted);font-weight:300;}
+
+/* SCORE CARD */
+.score-card{background:linear-gradient(135deg,var(--sage) 0%,#2A7060 100%);border-radius:20px;padding:22px;color:#fff;margin-bottom:12px;position:relative;overflow:hidden;cursor:pointer;transition:transform 0.2s;}
+.score-card:hover{transform:translateY(-2px);}
+.score-card::after{content:'';position:absolute;top:-20px;right:-20px;width:100px;height:100px;background:rgba(255,255,255,0.08);border-radius:50%;}
+.score-card::before{content:'';position:absolute;bottom:-30px;left:40px;width:80px;height:80px;background:rgba(255,255,255,0.04);border-radius:50%;}
+.score-top{display:flex;justify-content:space-between;align-items:flex-start;}
+.score-label{font-size:11px;opacity:0.7;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;}
+.score-num{font-family:'DM Serif Display',serif;font-size:48px;line-height:1;}
+.score-badge{background:rgba(255,255,255,0.18);border-radius:50px;padding:5px 12px;font-size:12px;font-weight:500;}
+.score-desc{font-size:13px;opacity:0.85;margin-top:8px;line-height:1.5;}
+.score-progress{background:rgba(255,255,255,0.2);border-radius:50px;height:4px;margin-top:12px;}
+.score-fill{height:100%;border-radius:50px;background:#fff;transition:width 1.2s ease;}
+
+/* STAT CARDS */
+.stats-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px;}
+.stat-card{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:14px 12px;text-align:center;}
+.stat-icon{font-size:20px;margin-bottom:6px;}
+.stat-label{font-size:10px;text-transform:uppercase;letter-spacing:0.8px;color:var(--muted);margin-bottom:4px;}
+.stat-val{font-size:18px;font-weight:500;color:var(--text);}
+.stat-sub{font-size:11px;color:var(--muted);margin-top:2px;}
+
+/* SECTION CARD */
+.section-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:18px;margin-bottom:12px;}
+.section-label{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:14px;display:flex;align-items:center;gap:6px;}
+.rec-item{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);font-size:13px;line-height:1.5;color:var(--text);}
+.rec-item:last-child{border-bottom:none;padding-bottom:0;}
+.rec-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:4px;}
+.rec-priority{font-size:10px;padding:2px 8px;border-radius:50px;font-weight:500;margin-left:auto;flex-shrink:0;}
+
+/* RISK BARS */
+.risk-item{margin-bottom:12px;}
+.risk-item:last-child{margin-bottom:0;}
+.risk-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+.risk-name{font-size:13px;color:var(--text);}
+.risk-val{font-size:12px;font-weight:500;}
+.risk-bar-bg{background:#F0F0F0;border-radius:50px;height:6px;}
+.risk-bar-fill{height:100%;border-radius:50px;transition:width 1s ease;}
+
+/* HABITS */
+.habits-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.habit-card{border:1px solid var(--border);border-radius:12px;padding:12px;display:flex;align-items:center;gap:10px;}
+.habit-icon{font-size:18px;width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.habit-info{flex:1;min-width:0;}
+.habit-label{font-size:11px;color:var(--muted);margin-bottom:2px;}
+.habit-val{font-size:13px;font-weight:500;color:var(--text);}
+
+.btn-assess{width:100%;padding:14px;background:var(--sage);color:#fff;border:none;border-radius:50px;font-size:15px;font-family:'DM Sans',sans-serif;font-weight:500;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:8px;}
+.btn-assess:hover{background:#3d6b5e;}
+.btn-outline{width:100%;padding:13px;background:transparent;color:var(--sage);border:1.5px solid var(--sage);border-radius:50px;font-size:14px;font-family:'DM Sans',sans-serif;font-weight:500;cursor:pointer;transition:all 0.2s;margin-top:8px;}
+.btn-outline:hover{background:var(--sage-l);}
+
+/* ASSESS */
+.assess-wrap{max-width:540px;margin:0 auto;padding:16px 16px 100px;width:100%;}
+.prog-wrap{background:var(--border);border-radius:50px;height:3px;margin-bottom:28px;overflow:hidden;}
+.prog-fill{height:100%;background:var(--sage);border-radius:50px;transition:width 0.4s ease;}
+.step-ind{font-size:12px;color:var(--muted);margin-bottom:6px;}
+.q-title{font-family:'DM Serif Display',serif;font-size:26px;color:var(--text);margin-bottom:6px;}
+.q-sub{font-size:14px;color:var(--muted);margin-bottom:24px;font-weight:300;line-height:1.6;}
+.opt-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.opt-grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;}
+.opt-btn{padding:13px 14px;border:1.5px solid var(--border);border-radius:var(--rs);background:var(--white);font-size:13px;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all 0.2s;text-align:left;color:var(--text);display:flex;align-items:center;gap:8px;line-height:1.4;}
+.opt-btn:hover{border-color:var(--sage-m);background:var(--sage-l);}
+.opt-btn.sel{border-color:var(--sage);background:var(--sage-l);color:#1A4A3A;font-weight:500;}
+.check-list{display:flex;flex-direction:column;gap:8px;}
+.check-item{display:flex;align-items:center;gap:12px;padding:12px 14px;border:1.5px solid var(--border);border-radius:var(--rs);cursor:pointer;background:var(--white);transition:all 0.2s;font-size:14px;color:var(--text);}
+.check-item:hover{border-color:var(--sage-m);}
+.check-item.chk{border-color:var(--sage);background:var(--sage-l);color:#1A4A3A;}
+.fgroup{margin-bottom:16px;}
+.flabel{display:block;font-size:11px;font-weight:500;color:var(--muted);margin-bottom:6px;letter-spacing:0.8px;text-transform:uppercase;}
+.finput{width:100%;padding:13px 16px;border:1.5px solid var(--border);border-radius:var(--rs);font-size:15px;font-family:'DM Sans',sans-serif;background:var(--white);color:var(--text);outline:none;transition:border-color 0.2s;}
+.finput:focus{border-color:var(--sage);}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.frow3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
+.nav-btns{display:flex;gap:8px;margin-top:24px;}
+.btn-back{background:transparent;border:1.5px solid var(--border);color:var(--muted);padding:13px 18px;border-radius:50px;font-size:14px;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all 0.2s;}
+.btn-back:hover{border-color:var(--sage);color:var(--sage);}
+.btn-next{flex:1;background:var(--sage);color:#fff;border:none;padding:13px 24px;border-radius:50px;font-size:15px;font-family:'DM Sans',sans-serif;font-weight:500;cursor:pointer;transition:all 0.2s;}
+.btn-next:hover{background:#3d6b5e;}
+.info-box{background:var(--sage-l);border-radius:var(--rs);padding:12px 14px;font-size:13px;color:#2A6050;margin-bottom:16px;line-height:1.5;border-left:3px solid var(--sage);}
+
+/* CHAT */
+.chat-outer{display:flex;flex-direction:column;flex:1;overflow:hidden;}
+.chat-head{padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;background:var(--white);}
+.s-avatar-lg{width:42px;height:42px;background:var(--sage);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;}
+.s-avatar-lg svg{width:28px;height:28px;}
+.online-dot{width:8px;height:8px;background:#4CAF50;border-radius:50%;border:2px solid white;position:absolute;bottom:0;right:0;}
+.chat-msgs{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px;background:var(--bg);}
+.msg{max-width:82%;padding:12px 16px;border-radius:18px;font-size:14px;line-height:1.65;}
+.msg.sofia{background:var(--white);border:1px solid var(--border);align-self:flex-start;border-bottom-left-radius:4px;color:var(--text);}
+.msg.user{background:var(--sage);color:#fff;align-self:flex-end;border-bottom-right-radius:4px;}
+.dots{display:flex;gap:4px;padding:4px 0;}
+.dots span{width:6px;height:6px;background:var(--sage-m);border-radius:50%;animation:bounce 1.2s infinite;}
+.dots span:nth-child(2){animation-delay:0.2s;}
+.dots span:nth-child(3){animation-delay:0.4s;}
+@keyframes bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-5px)}}
+.chat-in{padding:10px 12px;background:var(--white);border-top:1px solid var(--border);display:flex;gap:8px;align-items:center;}
+.chat-field{flex:1;padding:11px 16px;border:1.5px solid var(--border);border-radius:50px;font-size:14px;font-family:'DM Sans',sans-serif;outline:none;background:var(--bg);color:var(--text);transition:border-color 0.2s;}
+.chat-field::placeholder{color:#9BB5B0;}
+.chat-field:focus{border-color:var(--sage);}
+.chat-send{width:40px;height:40px;background:var(--sage);border:none;border-radius:50%;color:#fff;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:all 0.2s;flex-shrink:0;}
+.chat-send:hover{background:#3d6b5e;}
+.chat-suggestions{display:flex;gap:8px;padding:8px 12px 0;flex-wrap:wrap;}
+.chip{padding:7px 14px;background:var(--sage-l);border:1px solid #C8DDD8;border-radius:50px;font-size:12px;color:var(--sage);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.2s;white-space:nowrap;}
+.chip:hover{background:var(--sage);color:#fff;}
+
+/* BOTTOM NAV */
+.bnav{position:fixed;bottom:0;left:0;right:0;background:rgba(247,250,249,0.97);backdrop-filter:blur(12px);border-top:1px solid var(--border);display:flex;justify-content:space-around;padding:8px 0 16px;z-index:99;}
+.bnav-btn{display:flex;flex-direction:column;align-items:center;gap:2px;background:none;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:10px;color:var(--muted);padding:6px 16px;border-radius:var(--rs);transition:all 0.2s;}
+.bnav-btn.active{color:var(--sage);}
+.bnav-icon{font-size:20px;}
+
+.gen-wrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;text-align:center;}
+.pulse{width:72px;height:72px;border-radius:50%;background:var(--sage-l);border:2px solid var(--sage-m);margin:0 auto 24px;display:flex;align-items:center;justify-content:center;font-size:28px;animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{transform:scale(1);box-shadow:0 0 0 0 rgba(123,174,158,0.3)}50%{transform:scale(1.04);box-shadow:0 0 0 10px rgba(123,174,158,0)}}
+.gen-title{font-family:'DM Serif Display',serif;font-size:22px;color:var(--text);margin-bottom:8px;}
+.gen-sub{font-size:14px;color:var(--muted);font-weight:300;}
+.tag{display:inline-block;font-size:11px;padding:3px 10px;border-radius:50px;font-weight:500;}
+</style>
+</head>
+<body>
+
+<!-- LOGO SVG DEFINITION (reusable) -->
+<svg style="display:none">
+  <symbol id="sofia-logo" viewBox="0 0 40 40">
+    <circle cx="20" cy="20" r="19" fill="#EBF4F1" stroke="#4A8070" stroke-width="1.5"/>
+    <path d="M20 8 C20 8, 14 12, 14 18 C14 21 16 23 20 24 C24 23 26 21 26 18 C26 12 20 8 20 8Z" fill="#4A8070" opacity="0.3"/>
+    <path d="M20 11 C20 11, 15.5 14.5, 15.5 19 C15.5 21.5 17.5 23 20 23.5 C22.5 23 24.5 21.5 24.5 19 C24.5 14.5 20 11 20 11Z" fill="#4A8070"/>
+    <rect x="18.5" y="26" width="3" height="7" rx="1.5" fill="#4A8070"/>
+    <rect x="16" y="29.5" width="8" height="3" rx="1.5" fill="#4A8070"/>
+  </symbol>
+</svg>
+
+<!-- LOGIN -->
+<div id="s-login" class="screen active">
+  <div class="auth-wrap">
+    <div class="logo-mark-lg">
+      <svg width="52" height="52"><use href="#sofia-logo"/></svg>
+      <div class="lt">SOF<span>Í</span>A</div>
+    </div>
+    <div class="auth-tagline">Tu salud, organizada de forma inteligente.</div>
+    <div class="auth-card">
+      <div class="auth-title">Bienvenida de nuevo</div>
+      <div class="auth-sub">Inicia sesión para continuar</div>
+      <div class="msg-box" id="login-msg"></div>
+      <div class="field"><label>Correo electrónico</label><input type="email" id="login-email" placeholder="tu@correo.com" autocomplete="email"></div>
+      <div class="field"><label>Contraseña</label><input type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"></div>
+      <button class="btn-main" id="login-btn" onclick="doLogin()">Iniciar sesión</button>
+      <div class="divider"><span>o</span></div>
+      <button class="btn-google" onclick="doGoogle()">
+        <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+        Continuar con Google
+      </button>
+    </div>
+    <div class="auth-switch">¿Primera vez? <a onclick="showRegister()">Crear cuenta</a></div>
+  </div>
+</div>
+
+<!-- REGISTER -->
+<div id="s-register" class="screen">
+  <div class="auth-wrap">
+    <div class="logo-mark-lg">
+      <svg width="52" height="52"><use href="#sofia-logo"/></svg>
+      <div class="lt">SOF<span>Í</span>A</div>
+    </div>
+    <div class="auth-tagline">Tu salud, organizada de forma inteligente.</div>
+    <div class="auth-card">
+      <div class="auth-title">Crear tu cuenta</div>
+      <div class="auth-sub">Empieza tu camino de salud preventiva</div>
+      <div class="msg-box" id="reg-msg"></div>
+      <div class="field"><label>Tu nombre completo</label><input type="text" id="reg-name" placeholder="¿Cómo te llamas?" autocomplete="name"></div>
+      <div class="field"><label>Correo electrónico</label><input type="email" id="reg-email" placeholder="tu@correo.com" autocomplete="email"></div>
+      <div class="field"><label>Contraseña</label><input type="password" id="reg-pass" placeholder="Mínimo 6 caracteres" autocomplete="new-password" onkeydown="if(event.key==='Enter')doRegister()"></div>
+      <button class="btn-main" id="reg-btn" onclick="doRegister()">Crear cuenta</button>
+      <div class="divider"><span>o</span></div>
+      <button class="btn-google" onclick="doGoogle()">
+        <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+        Continuar con Google
+      </button>
+    </div>
+    <div class="auth-switch">¿Ya tienes cuenta? <a onclick="showLogin()">Iniciar sesión</a></div>
+  </div>
+</div>
+
+<!-- VERIFY -->
+<div id="s-verify" class="screen">
+  <div class="auth-wrap">
+    <div class="logo-mark-lg"><svg width="52" height="52"><use href="#sofia-logo"/></svg><div class="lt">SOF<span>Í</span>A</div></div>
+    <div class="auth-card" style="text-align:center;">
+      <div style="font-size:44px;margin-bottom:16px;">📬</div>
+      <div class="auth-title">Revisa tu correo</div>
+      <div class="auth-sub" id="verify-txt">Te enviamos un enlace de confirmación.</div>
+      <button class="btn-main" style="margin-top:16px;" onclick="showLogin()">Ya confirmé → Iniciar sesión</button>
+    </div>
+  </div>
+</div>
+
+<!-- HOME / DASHBOARD -->
+<div id="s-home" class="screen">
+  <div class="nav">
+    <div class="logo-svg">
+      <svg width="32" height="32"><use href="#sofia-logo"/></svg>
+      <div class="logo-text">SOF<span>Í</span>A</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <div class="user-pill"><div class="user-avatar" id="home-avatar">?</div><div class="user-name" id="home-uname">...</div></div>
+      <button class="btn-logout" onclick="doLogout()">Salir</button>
+    </div>
+  </div>
+  <div class="content">
+    <div class="welcome-hero">
+      <div class="welcome-greeting">Hola, <em id="home-fname">amiga</em> 👋</div>
+      <div class="welcome-sub" id="home-sub">Bienvenida a tu espacio de salud preventiva</div>
+    </div>
+
+    <!-- No assessment yet -->
+    <div id="no-assess-view">
+      <div class="section-card" style="text-align:center;padding:36px 20px;">
+        <div style="font-size:44px;margin-bottom:14px;">🌿</div>
+        <div style="font-size:18px;font-weight:500;margin-bottom:10px;">Empieza tu evaluación</div>
+        <div style="font-size:14px;color:var(--muted);margin-bottom:24px;font-weight:300;line-height:1.7;max-width:300px;margin-left:auto;margin-right:auto;">SOFÍA te hace un chequeo completo de salud preventiva y crea tu plan 100% personalizado.</div>
+        <button class="btn-assess" onclick="goApp('assess')">Comenzar evaluación →</button>
+      </div>
+    </div>
+
+    <!-- Dashboard -->
+    <div id="dash-view" style="display:none;">
+      <div class="score-card">
+        <div class="score-top">
+          <div>
+            <div class="score-label">Puntaje preventivo</div>
+            <div class="score-num" id="d-score">--</div>
+          </div>
+          <div class="score-badge" id="d-nivel">--</div>
+        </div>
+        <div class="score-desc" id="d-msg">Tu plan personalizado</div>
+        <div class="score-progress"><div class="score-fill" id="d-bar" style="width:0%"></div></div>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon">⚖️</div>
+          <div class="stat-label">IMC</div>
+          <div class="stat-val" id="d-imc">--</div>
+          <div class="stat-sub" id="d-imc-sub">--</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">🏃</div>
+          <div class="stat-label">Actividad</div>
+          <div class="stat-val" id="d-act">--</div>
+          <div class="stat-sub" id="d-act-sub">semanal</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">😴</div>
+          <div class="stat-label">Sueño</div>
+          <div class="stat-val" id="d-sue">--</div>
+          <div class="stat-sub">calidad</div>
+        </div>
+      </div>
+
+      <!-- Risk factors -->
+      <div class="section-card">
+        <div class="section-label">📊 Factores de riesgo</div>
+        <div id="d-risks"></div>
+      </div>
+
+      <!-- Habits summary -->
+      <div class="section-card">
+        <div class="section-label">🌱 Tu perfil de hábitos</div>
+        <div class="habits-grid" id="d-habits"></div>
+      </div>
+
+      <!-- Recommendations -->
+      <div class="section-card">
+        <div class="section-label">✨ Recomendaciones personalizadas</div>
+        <div id="d-recs"></div>
+      </div>
+
+      <button class="btn-assess" onclick="goApp('chat')">Hablar con SOFÍA 💬</button>
+      <button class="btn-outline" onclick="goApp('assess')">Actualizar evaluación</button>
+    </div>
+  </div>
+  <div class="bnav">
+    <button class="bnav-btn active" onclick="goApp('home')"><span class="bnav-icon">🏠</span>Inicio</button>
+    <button class="bnav-btn" onclick="goApp('assess')"><span class="bnav-icon">📋</span>Evaluación</button>
+    <button class="bnav-btn" onclick="goApp('chat')"><span class="bnav-icon">💬</span>SOFÍA</button>
+  </div>
+</div>
+
+<!-- ASSESSMENT — 8 steps -->
+<div id="s-assess" class="screen">
+  <div class="nav">
+    <div class="logo-svg"><svg width="28" height="28"><use href="#sofia-logo"/></svg><div class="logo-text">SOF<span>Í</span>A</div></div>
+    <button class="btn-logout" onclick="goApp('home')">← Volver</button>
+  </div>
+  <div class="assess-wrap">
+    <div class="step-ind">Paso <span id="as-step">1</span> de 8</div>
+    <div class="prog-wrap"><div class="prog-fill" id="as-prog" style="width:12.5%"></div></div>
+
+    <!-- Step 1: Datos básicos -->
+    <div id="as1">
+      <div class="q-title">Datos personales</div>
+      <div class="q-sub">La base de tu evaluación preventiva.</div>
+      <div class="frow">
+        <div class="fgroup"><label class="flabel">Edad</label><input class="finput" id="a-edad" type="number" placeholder="28" min="16" max="90"></div>
+        <div class="fgroup"><label class="flabel">Sexo biológico</label><select class="finput" id="a-sexo"><option value="">Seleccionar</option><option value="femenino">Femenino</option><option value="masculino">Masculino</option></select></div>
+      </div>
+      <div class="frow">
+        <div class="fgroup"><label class="flabel">Peso (kg)</label><input class="finput" id="a-peso" type="number" placeholder="60"></div>
+        <div class="fgroup"><label class="flabel">Estatura (cm)</label><input class="finput" id="a-est" type="number" placeholder="165"></div>
+      </div>
+      <div class="fgroup"><label class="flabel">Ciudad</label><input class="finput" id="a-ciudad" placeholder="Ej: Medellín"></div>
+      <div class="nav-btns"><button class="btn-next" onclick="asNext(1)">Continuar →</button></div>
+    </div>
+
+    <!-- Step 2: Trabajo y estilo de vida -->
+    <div id="as2" style="display:none;">
+      <div class="q-title">Trabajo y estilo de vida</div>
+      <div class="q-sub">Esto impacta directamente tu salud preventiva.</div>
+      <div class="fgroup"><label class="flabel">¿A qué te dedicas?</label>
+        <div class="opt-grid">
+          <button class="opt-btn" data-v="estudiante" onclick="selOpt(this,'trabajo')">🎓 Estudiante</button>
+          <button class="opt-btn" data-v="oficina" onclick="selOpt(this,'trabajo')">💻 Trabajo en oficina</button>
+          <button class="opt-btn" data-v="campo" onclick="selOpt(this,'trabajo')">🏗️ Trabajo físico</button>
+          <button class="opt-btn" data-v="salud" onclick="selOpt(this,'trabajo')">🏥 Área de salud</button>
+          <button class="opt-btn" data-v="emprendedor" onclick="selOpt(this,'trabajo')">🚀 Emprendedor/a</button>
+          <button class="opt-btn" data-v="otro" onclick="selOpt(this,'trabajo')">✨ Otro</button>
+        </div>
+      </div>
+      <div class="fgroup" style="margin-top:16px;"><label class="flabel">Nivel de estrés laboral</label>
+        <div class="opt-grid">
+          <button class="opt-btn" data-v="bajo" onclick="selOpt(this,'estres_lab')">😌 Bajo</button>
+          <button class="opt-btn" data-v="moderado" onclick="selOpt(this,'estres_lab')">😐 Moderado</button>
+          <button class="opt-btn" data-v="alto" onclick="selOpt(this,'estres_lab')">😰 Alto</button>
+          <button class="opt-btn" data-v="muy_alto" onclick="selOpt(this,'estres_lab')">🤯 Muy alto</button>
+        </div>
+      </div>
+      <div class="nav-btns"><button class="btn-back" onclick="asPrev(2)">← Atrás</button><button class="btn-next" onclick="asNext(2)">Continuar →</button></div>
+    </div>
+
+    <!-- Step 3: Actividad física y sueño -->
+    <div id="as3" style="display:none;">
+      <div class="q-title">Movimiento y descanso</div>
+      <div class="q-sub">Dos pilares fundamentales de tu salud.</div>
+      <div class="fgroup"><label class="flabel">Actividad física semanal</label>
+        <div class="opt-grid">
+          <button class="opt-btn" data-v="ninguna" onclick="selOpt(this,'act')">🪑 Ninguna</button>
+          <button class="opt-btn" data-v="leve" onclick="selOpt(this,'act')">🚶 1-2 veces/sem</button>
+          <button class="opt-btn" data-v="moderada" onclick="selOpt(this,'act')">🏃 3-4 veces/sem</button>
+          <button class="opt-btn" data-v="intensa" onclick="selOpt(this,'act')">💪 5+ veces/sem</button>
+        </div>
+      </div>
+      <div class="fgroup" style="margin-top:16px;"><label class="flabel">Tipo de ejercicio principal</label>
+        <div class="opt-grid">
+          <button class="opt-btn" data-v="cardio" onclick="selOpt(this,'tipo_ej')">🏃 Cardio / correr</button>
+          <button class="opt-btn" data-v="fuerza" onclick="selOpt(this,'tipo_ej')">🏋️ Fuerza / gym</button>
+          <button class="opt-btn" data-v="yoga" onclick="selOpt(this,'tipo_ej')">🧘 Yoga / pilates</button>
+          <button class="opt-btn" data-v="deportes" onclick="selOpt(this,'tipo_ej')">⚽ Deportes</button>
+          <button class="opt-btn" data-v="caminata" onclick="selOpt(this,'tipo_ej')">🚶 Caminatas</button>
+          <button class="opt-btn" data-v="nada" onclick="selOpt(this,'tipo_ej')">💤 No hago</button>
+        </div>
+      </div>
+      <div class="fgroup" style="margin-top:16px;"><label class="flabel">Calidad del sueño</label>
+        <div class="opt-grid">
+          <button class="opt-btn" data-v="malo" onclick="selOpt(this,'sueno')">😴 Malo (&lt;6h)</button>
+          <button class="opt-btn" data-v="regular" onclick="selOpt(this,'sueno')">😐 Regular (6-7h)</button>
+          <button class="opt-btn" data-v="bueno" onclick="selOpt(this,'sueno')">😊 Bueno (7-8h)</button>
+          <button class="opt-btn" data-v="excelente" onclick="selOpt(this,'sueno')">✨ Excelente (8h+)</button>
+        </div>
+      </div>
+      <div class="nav-btns"><button class="btn-back" onclick="asPrev(3)">← Atrás</button><button class="btn-next" onclick="asNext(3)">Continuar →</button></div>
+    </div>
+
+    <!-- Step 4: Alimentación -->
+    <div id="as4" style="display:none;">
+      <div class="q-title">Alimentación</div>
+      <div class="q-sub">Tu dieta dice mucho sobre tu salud futura.</div>
+      <div class="fgroup"><label class="flabel">¿Cómo describes tu dieta?</label>
+        <div class="opt-grid">
+          <button class="opt-btn" data-v="saludable" onclick="selOpt(this,'dieta')">🥗 Saludable</button>
+          <button class="opt-btn" data-v="regular" onclick="selOpt(this,'dieta')">😐 Regular</button>
+          <button class="opt-btn" data-v="procesada" onclick="selOpt(this,'dieta')">🍔 Mucho procesado</button>
+          <button class="opt-btn" data-v="vegetariana" onclick="selOpt(this,'dieta')">🌱 Vegetariana</button>
+          <button class="opt-btn" data-v="vegana" onclick="selOpt(this,'dieta')">🌿 Vegana</button>
+          <button class="opt-btn" data-v="variable" onclick="selOpt(this,'dieta')">🔄 Variable</button>
+        </div>
+      </div>
+      <div class="fgroup" style="margin-top:16px;"><label class="flabel">Consumo de agua diario</label>
+        <div class="opt-grid">
+          <button class="opt-btn" data-v="poco" onclick="selOpt(this,'agua')">💧 Menos de 1L</button>
+          <button class="opt-btn" data-v="regular" onclick="selOpt(this,'agua')">💧💧 1-1.5L</button>
+          <button class="opt-btn" data-v="bueno" onclick="selOpt(this,'agua')">💧💧💧 1.5-2L</button>
+          <button class="opt-btn" data-v="excelente" onclick="selOpt(this,'agua')">✅ Más de 2L</button>
+        </div>
+      </div>
+      <div class="nav-btns"><button class="btn-back" onclick="asPrev(4)">← Atrás</button><button class="btn-next" onclick="asNext(4)">Continuar →</button></div>
+    </div>
+
+    <!-- Step 5: Hábitos y consumos -->
+    <div id="as5" style="display:none;">
+      <div class="q-title">Hábitos y consumos</div>
+      <div class="q-sub">Información confidencial para personalizar tu evaluación.</div>
+      <div class="fgroup"><label class="flabel">Selecciona los que aplican</label>
+        <div class="check-list" id="habitos-list">
+          <div class="check-item" onclick="togChk(this,'fumador')">🚬 Fumo o fumé anteriormente</div>
+          <div class="check-item" onclick="togChk(this,'alcohol')">🍷 Consumo alcohol regularmente</div>
+          <div class="check-item" onclick="togChk(this,'sedentario')">🪑 Paso más de 8h sentado/a al día</div>
+          <div class="check-item" onclick="togChk(this,'pantallas')">📱 Uso pantallas más de 6h al día</div>
+          <div class="check-item" onclick="togChk(this,'cafeina')">☕ Consumo mucha cafeína</div>
+          <div class="check-item" onclick="togChk(this,'ninguno_h')">✅ Ninguno de los anteriores</div>
+        </div>
+      </div>
+      <div class="nav-btns"><button class="btn-back" onclick="asPrev(5)">← Atrás</button><button class="btn-next" onclick="asNext(5)">Continuar →</button></div>
+    </div>
+
+    <!-- Step 6: Antecedentes -->
+    <div id="as6" style="display:none;">
+      <div class="q-title">Historial de salud</div>
+      <div class="q-sub">Antecedentes familiares y personales. Todo es confidencial.</div>
+      <div class="fgroup"><label class="flabel">Antecedentes familiares</label>
+        <div class="check-list" id="ant-list">
+          <div class="check-item" onclick="togChk(this,'diabetes')">🩸 Diabetes tipo 2</div>
+          <div class="check-item" onclick="togChk(this,'hipertension')">❤️ Hipertensión arterial</div>
+          <div class="check-item" onclick="togChk(this,'cancer')">🎗️ Cáncer (cualquier tipo)</div>
+          <div class="check-item" onclick="togChk(this,'cardio')">🫀 Enfermedades cardiovasculares</div>
+          <div class="check-item" onclick="togChk(this,'obesidad')">⚖️ Obesidad</div>
+          <div class="check-item" onclick="togChk(this,'ninguno_a')">✅ Ninguno</div>
+        </div>
+      </div>
+      <div class="fgroup" style="margin-top:16px;"><label class="flabel">¿Tienes alguna condición diagnosticada?</label>
+        <input class="finput" id="a-condicion" placeholder="Ej: hipotiroidismo, ansiedad, ninguna...">
+      </div>
+      <div class="nav-btns"><button class="btn-back" onclick="asPrev(6)">← Atrás</button><button class="btn-next" onclick="asNext(6)">Continuar →</button></div>
+    </div>
+
+    <!-- Step 7: Salud mental -->
+    <div id="as7" style="display:none;">
+      <div class="q-title">Bienestar mental</div>
+      <div class="q-sub">La salud mental es salud. Sin juicios.</div>
+      <div class="fgroup"><label class="flabel">Estrés general en tu vida</label>
+        <div class="opt-grid">
+          <button class="opt-btn" data-v="bajo" onclick="selOpt(this,'estres')">😌 Bajo</button>
+          <button class="opt-btn" data-v="moderado" onclick="selOpt(this,'estres')">😐 Moderado</button>
+          <button class="opt-btn" data-v="alto" onclick="selOpt(this,'estres')">😰 Alto</button>
+          <button class="opt-btn" data-v="muy_alto" onclick="selOpt(this,'estres')">🤯 Muy alto</button>
+        </div>
+      </div>
+      <div class="fgroup" style="margin-top:16px;"><label class="flabel">Estado emocional últimas 2 semanas</label>
+        <div class="opt-grid">
+          <button class="opt-btn" data-v="muy_bien" onclick="selOpt(this,'emocional')">😊 Muy bien</button>
+          <button class="opt-btn" data-v="bien" onclick="selOpt(this,'emocional')">🙂 Bien</button>
+          <button class="opt-btn" data-v="regular" onclick="selOpt(this,'emocional')">😐 Regular</button>
+          <button class="opt-btn" data-v="mal" onclick="selOpt(this,'emocional')">😔 Difícil</button>
+        </div>
+      </div>
+      <div class="fgroup" style="margin-top:16px;"><label class="flabel">¿Tienes apoyo de salud mental?</label>
+        <div class="opt-grid">
+          <button class="opt-btn" data-v="si_psicologo" onclick="selOpt(this,'apoyo_mental')">✅ Voy al psicólogo</button>
+          <button class="opt-btn" data-v="red_apoyo" onclick="selOpt(this,'apoyo_mental')">🫂 Red de apoyo</button>
+          <button class="opt-btn" data-v="no_necesito" onclick="selOpt(this,'apoyo_mental')">😌 No lo necesito</button>
+          <button class="opt-btn" data-v="no_tengo" onclick="selOpt(this,'apoyo_mental')">🤔 No tengo</button>
+        </div>
+      </div>
+      <div class="nav-btns"><button class="btn-back" onclick="asPrev(7)">← Atrás</button><button class="btn-next" onclick="asNext(7)">Continuar →</button></div>
+    </div>
+
+    <!-- Step 8: Objetivos -->
+    <div id="as8" style="display:none;">
+      <div class="q-title">Tus objetivos 🎯</div>
+      <div class="q-sub">¿En qué quieres que SOFÍA te ayude más?</div>
+      <div class="fgroup"><label class="flabel">Objetivos de salud (selecciona varios)</label>
+        <div class="check-list" id="obj-list">
+          <div class="check-item" onclick="togChk(this,'prevencion')">🛡️ Prevención de enfermedades</div>
+          <div class="check-item" onclick="togChk(this,'energia')">⚡ Más energía y vitalidad</div>
+          <div class="check-item" onclick="togChk(this,'peso')">⚖️ Manejo de peso saludable</div>
+          <div class="check-item" onclick="togChk(this,'estres_obj')">🧘 Reducir estrés y ansiedad</div>
+          <div class="check-item" onclick="togChk(this,'sueno_obj')">😴 Mejorar calidad del sueño</div>
+          <div class="check-item" onclick="togChk(this,'deporte_obj')">🏃 Mejorar rendimiento físico</div>
+        </div>
+      </div>
+      <div class="fgroup" style="margin-top:16px;"><label class="flabel">¿Cuándo fue tu último chequeo médico?</label>
+        <div class="opt-grid">
+          <button class="opt-btn" data-v="reciente" onclick="selOpt(this,'chequeo')">✅ Menos de 1 año</button>
+          <button class="opt-btn" data-v="hace2" onclick="selOpt(this,'chequeo')">🕐 1-2 años</button>
+          <button class="opt-btn" data-v="hace3" onclick="selOpt(this,'chequeo')">📅 Más de 2 años</button>
+          <button class="opt-btn" data-v="nunca" onclick="selOpt(this,'chequeo')">❓ No recuerdo</button>
+        </div>
+      </div>
+      <div class="nav-btns"><button class="btn-back" onclick="asPrev(8)">← Atrás</button><button class="btn-next" onclick="submitAssess()">Ver mi evaluación →</button></div>
+    </div>
+  </div>
+  <div class="bnav">
+    <button class="bnav-btn" onclick="goApp('home')"><span class="bnav-icon">🏠</span>Inicio</button>
+    <button class="bnav-btn active"><span class="bnav-icon">📋</span>Evaluación</button>
+    <button class="bnav-btn" onclick="goApp('chat')"><span class="bnav-icon">💬</span>SOFÍA</button>
+  </div>
+</div>
+
+<!-- GENERATING -->
+<div id="s-gen" class="screen">
+  <div class="gen-wrap">
+    <div class="pulse">🌿</div>
+    <div class="gen-title">SOFÍA está analizando tu perfil...</div>
+    <div class="gen-sub" id="gen-sub-text">Procesando tu evaluación completa</div>
+  </div>
+</div>
+
+<!-- CHAT -->
+<div id="s-chat" class="screen">
+  <div class="nav">
+    <div class="logo-svg"><svg width="28" height="28"><use href="#sofia-logo"/></svg><div class="logo-text">SOF<span>Í</span>A</div></div>
+    <button class="btn-logout" onclick="goApp('home')">← Volver</button>
+  </div>
+  <div class="chat-outer">
+    <div class="chat-head">
+      <div class="s-avatar-lg" style="position:relative;">
+        <svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="20" fill="#4A8070"/><path d="M20 6C20 6,13 11,13 18C13 21.5 16 24 20 25C24 24 27 21.5 27 18C27 11 20 6 20 6Z" fill="white" opacity="0.3"/><path d="M20 9C20 9,14.5 13.5,14.5 19C14.5 21.8 17 23.5 20 24C23 23.5 25.5 21.8 25.5 19C25.5 13.5 20 9 20 9Z" fill="white"/><rect x="18.5" y="26" width="3" height="7" rx="1.5" fill="white"/><rect x="15.5" y="29.5" width="9" height="3" rx="1.5" fill="white"/></svg>
+        <div class="online-dot"></div>
+      </div>
+      <div>
+        <div style="font-weight:500;font-size:15px;color:var(--text);">SOFÍA</div>
+        <div style="font-size:12px;color:#4CAF50;display:flex;align-items:center;gap:4px;">● En línea</div>
+      </div>
+    </div>
+    <div class="chat-suggestions" id="chat-chips"></div>
+    <div class="chat-msgs" id="chat-msgs"></div>
+    <div class="chat-in">
+      <input class="chat-field" id="chat-in" placeholder="Pregúntale algo a SOFÍA..." onkeydown="if(event.key==='Enter')sendMsg()">
+      <button class="chat-send" onclick="sendMsg()">↑</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SURL='https://rlypqzwuucfrmhmqdnxp.supabase.co';
+const SKEY='sb_publishable_0hVEgIpm8-EaOaNeGjuPVQ_1NhO4On0';
+const sb=supabase.createClient(SURL,SKEY);
+let currentUser=null, userProfile={}, chatHist=[];
+const sel={}, chks=[];
+
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo(0,0);}
+function showLogin(){show('s-login');}
+function showRegister(){show('s-register');}
+function showMsg(el,t,type){el.textContent=t;el.className='msg-box '+type;}
+
+async function doLogin(){
+  const email=document.getElementById('login-email').value.trim();
+  const pass=document.getElementById('login-pass').value;
+  const msg=document.getElementById('login-msg');
+  const btn=document.getElementById('login-btn');
+  if(!email||!pass){showMsg(msg,'Completa todos los campos.','error');return;}
+  btn.disabled=true;btn.textContent='Iniciando...';
+  const {data,error}=await sb.auth.signInWithPassword({email,password:pass});
+  btn.disabled=false;btn.textContent='Iniciar sesión';
+  if(error){showMsg(msg,error.message.includes('Invalid')?'Correo o contraseña incorrectos.':error.message,'error');return;}
+  await loadUser(data.user);
+}
+
+async function doRegister(){
+  const name=document.getElementById('reg-name').value.trim();
+  const email=document.getElementById('reg-email').value.trim();
+  const pass=document.getElementById('reg-pass').value;
+  const msg=document.getElementById('reg-msg');
+  const btn=document.getElementById('reg-btn');
+  if(!name||!email||!pass){showMsg(msg,'Completa todos los campos.','error');return;}
+  if(pass.length<6){showMsg(msg,'La contraseña debe tener al menos 6 caracteres.','error');return;}
+  btn.disabled=true;btn.textContent='Creando cuenta...';
+  const {data,error}=await sb.auth.signUp({email,password:pass,options:{data:{full_name:name}}});
+  btn.disabled=false;btn.textContent='Crear cuenta';
+  if(error){showMsg(msg,error.message,'error');return;}
+  document.getElementById('verify-txt').textContent=`Te enviamos un enlace a ${email}. Confírmalo y luego inicia sesión.`;
+  show('s-verify');
+}
+
+async function doGoogle(){await sb.auth.signInWithOAuth({provider:'google',options:{redirectTo:window.location.origin}});}
+async function doLogout(){await sb.auth.signOut();currentUser=null;userProfile={};chatHist=[];showLogin();}
+
+async function loadUser(user){
+  currentUser=user;
+  const name=user.user_metadata?.full_name||user.email.split('@')[0];
+  const fname=name.split(' ')[0];
+  document.getElementById('home-fname').textContent=fname;
+  document.getElementById('home-uname').textContent=fname;
+  document.getElementById('home-avatar').textContent=fname[0].toUpperCase();
+  document.getElementById('home-sub').textContent=`Bienvenida de nuevo, ${fname} 🌿`;
+  try{
+    const {data}=await sb.from('sofia_profiles').select('*').eq('user_id',user.id).single();
+    if(data){userProfile=data;showDash(data);}
+    else{document.getElementById('no-assess-view').style.display='block';document.getElementById('dash-view').style.display='none';}
+  }catch(e){document.getElementById('no-assess-view').style.display='block';document.getElementById('dash-view').style.display='none';}
+  initChat(fname);
+  show('s-home');
+}
+
+function showDash(p){
+  document.getElementById('no-assess-view').style.display='none';
+  document.getElementById('dash-view').style.display='block';
+  const score=p.score||0;
+  document.getElementById('d-score').textContent=score;
+  document.getElementById('d-bar').style.width=score+'%';
+  document.getElementById('d-msg').textContent=p.msg||'Tu plan personalizado';
+  let nivel='Inicio';
+  if(score>=80)nivel='Excelente 🌟';
+  else if(score>=65)nivel='Bueno 👍';
+  else if(score>=50)nivel='Regular ⚡';
+  else nivel='Mejorar 🌱';
+  document.getElementById('d-nivel').textContent=nivel;
+  if(p.imc){
+    document.getElementById('d-imc').textContent=parseFloat(p.imc).toFixed(1);
+    let sub='Normal';
+    if(p.imc<18.5)sub='Bajo peso';
+    else if(p.imc<=24.9)sub='Normal ✓';
+    else if(p.imc<=29.9)sub='Sobrepeso';
+    else sub='Obesidad';
+    document.getElementById('d-imc-sub').textContent=sub;
+  }
+  const actMap={ninguna:'0x',leve:'1-2x',moderada:'3-4x',intensa:'5+x'};
+  document.getElementById('d-act').textContent=actMap[p.actividad]||'--';
+  const sueMap={malo:'😴',regular:'😐',bueno:'😊',excelente:'✨'};
+  document.getElementById('d-sue').textContent=sueMap[p.sueno]||'--';
+
+  // Risk factors
+  const risks=[];
+  if(p.imc&&p.imc>25)risks.push({name:'Peso',val:Math.min(100,Math.round((p.imc-25)*8)),color:'#E8A62D'});
+  if(p.estres==='alto'||p.estres==='muy_alto')risks.push({name:'Estrés',val:p.estres==='muy_alto'?85:65,color:'#E07070'});
+  if(p.sueno==='malo')risks.push({name:'Sueño',val:70,color:'#9B8EC4'});
+  if(p.actividad==='ninguna')risks.push({name:'Sedentarismo',val:75,color:'#E8A62D'});
+  if(risks.length===0)risks.push({name:'Riesgo general',val:15,color:'#4A8070'});
+  document.getElementById('d-risks').innerHTML=risks.map(r=>`
+    <div class="risk-item">
+      <div class="risk-header"><span class="risk-name">${r.name}</span><span class="risk-val" style="color:${r.color};">${r.val}%</span></div>
+      <div class="risk-bar-bg"><div class="risk-bar-fill" style="width:${r.val}%;background:${r.color};"></div></div>
+    </div>`).join('');
+
+  // Habits
+  const habits=[
+    {icon:'🏃',bg:'#EBF4F1',label:'Actividad',val:actMap[p.actividad]||'--'},
+    {icon:'💧',bg:'#E8F4FB',label:'Hidratación',val:{poco:'Baja',regular:'Media',bueno:'Buena',excelente:'Óptima'}[p.agua]||'--'},
+    {icon:'🥗',bg:'#F0F8EC',label:'Dieta',val:{saludable:'Saludable',regular:'Regular',procesada:'Mejorable',vegetariana:'Veggie',vegana:'Vegana',variable:'Variable'}[p.dieta]||'--'},
+    {icon:'😴',bg:'#F0EDF8',label:'Sueño',val:{malo:'Malo',regular:'Regular',bueno:'Bueno',excelente:'Excelente'}[p.sueno]||'--'},
+  ];
+  document.getElementById('d-habits').innerHTML=habits.map(h=>`
+    <div class="habit-card">
+      <div class="habit-icon" style="background:${h.bg};">${h.icon}</div>
+      <div class="habit-info"><div class="habit-label">${h.label}</div><div class="habit-val">${h.val}</div></div>
+    </div>`).join('');
+
+  const cols=['#1E6040','#185FA5','#5A4D8A','#B87A00','#1E6040','#C05030'];
+  const recs=p.recomendaciones||[];
+  document.getElementById('d-recs').innerHTML=recs.map((r,i)=>`
+    <div class="rec-item">
+      <div class="rec-dot" style="background:${cols[i%6]};"></div>
+      <span>${r}</span>
+    </div>`).join('');
+}
+
+function goApp(s){show('s-'+s);}
+function selOpt(btn,key){btn.parentElement.querySelectorAll('.opt-btn').forEach(b=>b.classList.remove('sel'));btn.classList.add('sel');sel[key]=btn.getAttribute('data-v');}
+function togChk(el,val){el.classList.toggle('chk');const i=chks.indexOf(val);if(i>-1)chks.splice(i,1);else chks.push(val);}
+
+function asNext(n){
+  if(n===1){if(!document.getElementById('a-edad').value||!document.getElementById('a-sexo').value||!document.getElementById('a-peso').value||!document.getElementById('a-est').value){alert('Por favor completa los campos de edad, sexo, peso y estatura.');return;}}
+  document.getElementById('as'+n).style.display='none';
+  document.getElementById('as'+(n+1)).style.display='block';
+  document.getElementById('as-step').textContent=n+1;
+  document.getElementById('as-prog').style.width=(((n+1)/8)*100)+'%';
+  window.scrollTo(0,0);
+}
+function asPrev(n){
+  document.getElementById('as'+n).style.display='none';
+  document.getElementById('as'+(n-1)).style.display='block';
+  document.getElementById('as-step').textContent=n-1;
+  document.getElementById('as-prog').style.width=(((n-1)/8)*100)+'%';
+  window.scrollTo(0,0);
+}
+
+async function submitAssess(){
+  const edad=parseInt(document.getElementById('a-edad').value)||0;
+  const sexo=document.getElementById('a-sexo').value;
+  const peso=parseFloat(document.getElementById('a-peso').value)||0;
+  const est=parseFloat(document.getElementById('a-est').value)||0;
+  const ciudad=document.getElementById('a-ciudad').value||'Colombia';
+  const condicion=document.getElementById('a-condicion').value||'ninguna';
+  const imc=est>0?peso/Math.pow(est/100,2):null;
+  const act=sel['act']||'', sue=sel['sueno']||'', str=sel['estres']||'';
+  const trabajo=sel['trabajo']||'', dieta=sel['dieta']||'', agua=sel['agua']||'';
+  const emocional=sel['emocional']||'', chequeo=sel['chequeo']||'';
+
+  let score=60;
+  if(act==='moderada')score+=8;else if(act==='intensa')score+=12;else if(act==='leve')score+=4;else score-=6;
+  if(sue==='bueno')score+=6;else if(sue==='excelente')score+=10;else if(sue==='malo')score-=8;
+  if(str==='bajo')score+=6;else if(str==='alto')score-=6;else if(str==='muy_alto')score-=12;
+  if(imc&&imc>=18.5&&imc<=24.9)score+=6;else if(imc&&imc>30)score-=8;
+  if(dieta==='saludable')score+=5;else if(dieta==='procesada')score-=5;
+  if(agua==='excelente')score+=4;else if(agua==='poco')score-=4;
+  if(chequeo==='reciente')score+=5;else if(chequeo==='nunca')score-=8;
+  if(emocional==='muy_bien')score+=4;else if(emocional==='mal')score-=6;
+  if(chks.includes('fumador'))score-=8;
+  if(chks.includes('sedentario'))score-=5;
+  score=Math.min(100,Math.max(15,Math.round(score)));
+
+  goApp('gen');
+  const msgs_gen=['Analizando tus hábitos de vida...','Evaluando factores de riesgo...','Generando recomendaciones personalizadas...'];
+  let gi=0;
+  const gi_int=setInterval(()=>{document.getElementById('gen-sub-text').textContent=msgs_gen[gi%msgs_gen.length];gi++;},1800);
+
+  const name=currentUser.user_metadata?.full_name||currentUser.email.split('@')[0];
+  const fname=name.split(' ')[0];
+
+  const prompt=`Eres SOFÍA, asistente médica preventiva experta. Analiza este perfil de salud completo y genera recomendaciones MUY personalizadas en español colombiano.
+
+PERFIL COMPLETO:
+- Nombre: ${fname}, Edad: ${edad} años, Sexo: ${sexo}, Ciudad: ${ciudad}
+- Peso: ${peso}kg, Estatura: ${est}cm, IMC: ${imc?imc.toFixed(1):'N/A'}
+- Trabajo/ocupación: ${trabajo}
+- Actividad física: ${act}, Tipo ejercicio: ${sel['tipo_ej']||'no especificado'}
+- Sueño: ${sue}, Estrés laboral: ${sel['estres_lab']||'no especificado'}, Estrés general: ${str}
+- Dieta: ${dieta}, Agua: ${agua}
+- Hábitos: ${chks.join(', ')||'sin hábitos negativos'}
+- Antecedentes familiares: ${chks.filter(c=>['diabetes','hipertension','cancer','cardio','obesidad'].includes(c)).join(', ')||'ninguno'}
+- Condición diagnosticada: ${condicion}
+- Estado emocional: ${emocional}, Apoyo mental: ${sel['apoyo_mental']||'no especificado'}
+- Objetivos: ${chks.filter(c=>['prevencion','energia','peso','estres_obj','sueno_obj','deporte_obj'].includes(c)).join(', ')||'preventivos generales'}
+- Último chequeo: ${chequeo}
+- Puntaje calculado: ${score}/100
+
+Genera una respuesta JSON con:
+1. 5 recomendaciones MUY específicas y personalizadas para ${fname} (no genéricas), máx 22 palabras cada una
+2. Un mensaje motivador ultra-personalizado de máx 12 palabras para ${fname}
+3. Un resumen de los 2-3 factores de riesgo principales
+
+Responde SOLO con JSON válido:
+{"recomendaciones":["rec1","rec2","rec3","rec4","rec5"],"mensaje":"mensaje para ${fname}","riesgos_principales":"texto breve de riesgos"}`;
+
+  let recs=[], msg='Tu salud es tu mayor inversión, '+fname+'.';
+  try{
+    const r=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:700,messages:[{role:'user',content:prompt}]})});
+    const d=await r.json();
+    const parsed=JSON.parse(d.content[0].text.replace(/```json|```/g,'').trim());
+    recs=parsed.recomendaciones||[];
+    msg=parsed.mensaje||msg;
+  }catch(e){
+    recs=[
+      `${fname}, agenda tu chequeo general este mes — llevas tiempo sin hacerlo.`,
+      'Incorpora 30 min de caminata 4 veces por semana para tu nivel actual.',
+      'Practica respiración 4-7-8 antes de dormir para mejorar tu sueño.',
+      'Aumenta tu hidratación a 2L diarios — esto impacta tu energía directamente.',
+      'Considera una consulta de nutrición personalizada para tu tipo de dieta.'
+    ];
+  }
+
+  clearInterval(gi_int);
+  const profileData={user_id:currentUser.id,score,imc:imc?parseFloat(imc.toFixed(1)):null,edad,sexo,peso,estatura:est,ciudad,condicion,actividad:act,sueno:sue,estres:str,estres_laboral:sel['estres_lab']||'',trabajo,dieta,agua,habitos:chks,antecedentes:chks,objetivo:chks.join(','),emocional,apoyo_mental:sel['apoyo_mental']||'',chequeo,recomendaciones:recs,msg,updated_at:new Date().toISOString()};
+  try{await sb.from('sofia_profiles').upsert(profileData,{onConflict:'user_id'});}catch(e){}
+  userProfile=profileData;
+  showDash(profileData);
+  goApp('home');
+}
+
+function initChat(fname){
+  chatHist=[];
+  const chips=['¿Qué debo comer hoy?','¿Cómo mejorar mi sueño?','¿Qué chequeos necesito?','Tengo mucho estrés'];
+  document.getElementById('chat-chips').innerHTML=chips.map(c=>`<div class="chip" onclick="sendChip('${c}')">${c}</div>`).join('');
+  const greeting=userProfile.score
+    ? `Hola ${fname}! Tu puntaje preventivo es ${userProfile.score}/100. ${userProfile.score>=70?'¡Vas muy bien! 🌟':'Hay espacio para mejorar 🌱'} ¿En qué te ayudo hoy?`
+    : `Hola ${fname}! Soy SOFÍA, tu asistente personal de salud preventiva 🌿 ¿En qué te puedo ayudar hoy?`;
+  document.getElementById('chat-msgs').innerHTML=`<div class="msg sofia">${greeting}</div>`;
+}
+
+function sendChip(text){document.getElementById('chat-in').value=text;sendMsg();}
+
+async function sendMsg(){
+  const inp=document.getElementById('chat-in');
+  const text=inp.value.trim();if(!text)return;inp.value='';
+  const msgs=document.getElementById('chat-msgs');
+  msgs.innerHTML+=`<div class="msg user">${text}</div>`;
+  const tid='t'+Date.now();
+  msgs.innerHTML+=`<div class="msg sofia" id="${tid}"><div class="dots"><span></span><span></span><span></span></div></div>`;
+  msgs.scrollTop=msgs.scrollHeight;
+  chatHist.push({role:'user',content:text});
+
+  const fname=(currentUser?.user_metadata?.full_name||'').split(' ')[0];
+  const p=userProfile;
+  const sys=`Eres SOFÍA, una asistente cálida, empática y experta en salud preventiva para colombianos jóvenes de 25-35 años. Das consejos basados en medicina preventiva, hábitos saludables y bienestar integral. SIEMPRE recomiendas consultar profesionales para diagnósticos. Respondes en español colombiano natural, concisa (máx 3 párrafos), cálida y motivadora. Nunca das diagnósticos definitivos.
+
+PERFIL DEL USUARIO:
+- Nombre: ${fname}, Edad: ${p.edad||'desconocida'}, Sexo: ${p.sexo||'desconocido'}
+- IMC: ${p.imc||'no calculado'}, Actividad: ${p.actividad||'desconocida'}, Sueño: ${p.sueno||'desconocido'}
+- Estrés: ${p.estres||'desconocido'}, Dieta: ${p.dieta||'desconocida'}
+- Trabajo: ${p.trabajo||'desconocido'}, Ciudad: ${p.ciudad||'Colombia'}
+- Condición: ${p.condicion||'ninguna'}, Puntaje: ${p.score||'sin evaluar'}/100
+- Objetivos: ${p.objetivo||'preventivos generales'}
+
+Usa esta información para personalizar tus respuestas. Llama a ${fname} por su nombre ocasionalmente.`;
+
+  let reply='Tuve un pequeño problema de conexión. ¡Inténtalo de nuevo!';
+  try{
+    const r=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:500,system:sys,messages:chatHist})});
+    const d=await r.json();
+    if(d.content&&d.content[0])reply=d.content[0].text;
+  }catch(e){}
+  chatHist.push({role:'assistant',content:reply});
+  document.getElementById(tid)?.remove();
+  msgs.innerHTML+=`<div class="msg sofia">${reply}</div>`;
+  msgs.scrollTop=msgs.scrollHeight;
+}
+
+(async()=>{
+  const {data:{session}}=await sb.auth.getSession();
+  if(session?.user)await loadUser(session.user);
+  else showLogin();
+  sb.auth.onAuthStateChange(async(_,session)=>{if(session?.user&&!currentUser)await loadUser(session.user);});
+})();
+</script>
+</body>
+</html>
