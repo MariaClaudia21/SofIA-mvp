@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>sofía</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300;1,9..40,400&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{--sage:#3D7566;--sage-l:#EBF4F1;--sage-m:#7BAE9E;--sage-d:#2A6050;--teal:#2A9D8F;--teal-l:#E4F5F3;--text:#1A2A2E;--muted:#5A7070;--border:#D0E0DA;--white:#FFFFFF;--bg:#F7FAF9;--r:16px;--rs:10px;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased;}
+.logo{font-family:'DM Sans',sans-serif;font-size:22px;font-weight:300;letter-spacing:-0.5px;line-height:1;}
+.logo .sof{color:var(--text);}
+.logo .ia{color:var(--teal);font-style:italic;}
+.logo-lg{font-family:'DM Sans',sans-serif;font-size:56px;font-weight:300;letter-spacing:-2px;line-height:1;text-align:center;margin-bottom:8px;}
+.logo-lg .sof{color:var(--text);}
+.logo-lg .ia{color:var(--teal);font-style:italic;}
+.screen{display:none;animation:fi 0.3s ease;}
+.screen.active{display:flex;flex-direction:column;min-height:100vh;}
+@keyframes fi{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.auth-wrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;max-width:420px;margin:0 auto;width:100%;}
+.auth-tagline{font-size:13px;color:var(--muted);margin-bottom:32px;font-weight:300;text-align:center;}
+.auth-card{background:var(--white);border:1px solid var(--border);border-radius:20px;padding:28px 24px;width:100%;}
+.auth-title{font-size:19px;font-weight:500;color:var(--text);margin-bottom:4px;}
+.auth-sub{font-size:13px;color:var(--muted);margin-bottom:22px;}
+.field{margin-bottom:14px;}
+.field label{display:block;font-size:11px;font-weight:500;color:var(--muted);margin-bottom:6px;letter-spacing:0.8px;text-transform:uppercase;}
+.field input,.field select{width:100%;padding:13px 16px;border:1.5px solid var(--border);border-radius:var(--rs);font-size:15px;font-family:'DM Sans',sans-serif;background:var(--white);color:var(--text);outline:none;transition:border-color 0.2s;-webkit-text-fill-color:var(--text);}
+.field input::placeholder{color:#9BB5B0;}
+.field input:focus,.field select:focus{border-color:var(--teal);}
+.field input:-webkit-autofill{-webkit-box-shadow:0 0 0 30px white inset;-webkit-text-fill-color:var(--text);}
+.btn-main{width:100%;padding:14px;background:var(--sage);color:#fff;border:none;border-radius:50px;font-size:15px;font-family:'DM Sans',sans-serif;font-weight:500;cursor:pointer;transition:all 0.2s;margin-top:6px;}
+.btn-main:hover{background:var(--sage-d);}
+.btn-main:disabled{opacity:0.5;cursor:not-allowed;}
+.divider{display:flex;align-items:center;gap:12px;margin:18px 0;}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border);}
+.divider span{font-size:12px;color:var(--muted);}
+.btn-google{width:100%;padding:13px;background:var(--white);color:var(--text);border:1.5px solid var(--border);border-radius:50px;font-size:14px;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:10px;}
+.btn-google:hover{border-color:var(--teal);background:var(--teal-l);}
+.auth-switch{text-align:center;margin-top:18px;font-size:13px;color:var(--muted);}
+.auth-switch a{color:var(--teal);cursor:pointer;font-weight:500;}
+.msg-box{padding:11px 15px;border-radius:var(--rs);font-size:13px;margin-bottom:14px;display:none;line-height:1.5;}
+.msg-box.error{background:#FDECEA;color:#A02020;border:1px solid #F5C0C0;display:block;}
+.nav{position:sticky;top:0;z-index:100;background:rgba(247,250,249,0.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:12px 20px;display:flex;align-items:center;justify-content:space-between;}
+.user-pill{display:flex;align-items:center;gap:8px;background:var(--sage-l);border-radius:50px;padding:5px 14px 5px 6px;border:1px solid #C8DDD8;}
+.user-avatar{width:28px;height:28px;background:var(--sage);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:500;}
+.user-name{font-size:13px;font-weight:400;color:var(--sage);}
+.btn-sm{background:none;border:none;color:var(--muted);font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;padding:4px 10px;border-radius:50px;transition:all 0.2s;}
+.btn-sm:hover{color:var(--text);background:var(--border);}
+.content{flex:1;max-width:600px;margin:0 auto;padding:20px 16px 100px;width:100%;}
+.welcome-hero{padding:24px 0 28px;}
+.welcome-greeting{font-size:27px;font-weight:300;color:var(--text);margin-bottom:6px;line-height:1.2;}
+.welcome-greeting em{color:var(--teal);font-style:normal;font-weight:400;}
+.welcome-sub{font-size:14px;color:var(--muted);font-weight:300;}
+.score-card{background:var(--sage);border-radius:20px;padding:22px;color:#fff;margin-bottom:12px;position:relative;overflow:hidden;transition:transform 0.2s;}
+.score-card:hover{transform:translateY(-2px);}
+.score-card::after{content:'';position:absolute;top:-20px;right:-20px;width:100px;height:100px;background:rgba(255,255,255,0.06);border-radius:50%;}
+.score-top{display:flex;justify-content:space-between;align-items:flex-start;}
+.score-label{font-size:10px;opacity:0.7;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;}
+.score-num{font-size:52px;font-weight:300;line-height:1;}
+.score-badge{background:rgba(255,255,255,0.15);border-radius:50px;padding:4px 12px;font-size:12px;}
+.score-desc{font-size:13px;opacity:0.85;margin-top:8px;line-height:1.5;}
+.score-progress{background:rgba(255,255,255,0.2);border-radius:50px;height:3px;margin-top:12px;}
+.score-fill{height:100%;border-radius:50px;background:#fff;transition:width 1.2s ease;}
+.stats-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px;}
+.stat-card{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:14px 12px;text-align:center;}
+.stat-icon{font-size:18px;margin-bottom:5px;}
+.stat-label{font-size:10px;text-transform:uppercase;letter-spacing:0.8px;color:var(--muted);margin-bottom:3px;}
+.stat-val{font-size:17px;font-weight:400;color:var(--text);}
+.stat-sub{font-size:11px;color:var(--muted);margin-top:2px;}
+.section-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:18px;margin-bottom:12px;}
+.section-label{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:14px;}
+.rec-item{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);font-size:13px;line-height:1.55;color:var(--text);}
+.rec-item:last-child{border-bottom:none;padding-bottom:0;}
+.rec-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:5px;}
+.risk-item{margin-bottom:12px;}
+.risk-item:last-child{margin-bottom:0;}
+.risk-header{display:flex;justify-content:space-between;margin-bottom:5px;}
+.risk-name{font-size:13px;color:var(--text);}
+.risk-val{font-size:12px;font-weight:500;}
+.risk-bar-bg{background:#EEF2F0;border-radius:50px;height:5px;}
+.risk-bar-fill{height:100%;border-radius:50px;transition:width 1s ease;}
+.habits-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.habit-card{border:1px solid var(--border);border-radius:12px;padding:12px;display:flex;align-items:center;gap:10px;}
+.habit-icon{font-size:16px;width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.habit-label{font-size:10px;color:var(--muted);margin-bottom:2px;text-transform:uppercase;letter-spacing:0.5px;}
+.habit-val{font-size:13px;font-weight:400;color:var(--text);}
+.btn-primary{width:100%;padding:14px;background:var(--sage);color:#fff;border:none;border-radius:50px;font-size:15px;font-family:'DM Sans',sans-serif;font-weight:500;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:8px;}
+.btn-primary:hover{background:var(--sage-d);}
+.btn-outline{width:100%;padding:13px;background:transparent;color:var(--sage);border:1.5px solid var(--sage);border-radius:50px;font-size:14px;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all 0.2s;margin-top:8px;}
+.btn-outline:hover{background:var(--sage-l);}
+.assess-wrap{max-width:540px;margin:0 auto;padding:16px 16px 100px;width:100%;}
+.prog-wrap{background:var(--border);border-radius:50px;height:2px;margin-bottom:28px;overflow:hidden;}
+.prog-fill{height:100%;background:var(--teal);border-radius:50px;transition:width 0.4s ease;}
+.step-ind{font-size:11px;color:var(--muted);margin-bottom:6px;}
+.q-title{font-size:24px;font-weight:300;color:var(--text);margin-bottom:6px;line-height:1.3;}
+.q-sub{font-size:13px;color:var(--muted);margin-bottom:22px;font-weight:300;line-height:1.6;}
+.opt-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.opt-btn{padding:12px 14px;border:1.5px solid var(--border);border-radius:var(--rs);background:var(--white);font-size:13px;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all 0.2s;text-align:left;color:var(--text);display:flex;align-items:center;gap:8px;line-height:1.4;}
+.opt-btn:hover{border-color:var(--teal);background:var(--teal-l);}
+.opt-btn.sel{border-color:var(--teal);background:var(--teal-l);color:#1A5C54;font-weight:500;}
+.check-list{display:flex;flex-direction:column;gap:7px;}
+.check-item{display:flex;align-items:center;gap:12px;padding:12px 14px;border:1.5px solid var(--border);border-radius:var(--rs);cursor:pointer;background:var(--white);transition:all 0.2s;font-size:14px;color:var(--text);}
+.check-item:hover{border-color:var(--teal);}
+.check-item.chk{border-color:var(--teal);background:var(--teal-l);color:#1A5C54;}
+.fgroup{margin-bottom:15px;}
+.flabel{display:block;font-size:11px;font-weight:500;color:var(--muted);margin-bottom:6px;letter-spacing:0.8px;text-transform:uppercase;}
+.finput{width:100%;padding:12px 16px;border:1.5px solid var(--border);border-radius:var(--rs);font-size:15px;font-family:'DM Sans',sans-serif;background:var(--white);color:var(--text);outline:none;transition:border-color 0.2s;}
+.finput:focus{border-color:var(--teal);}
+.finput::placeholder{color:#9BB5B0;}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.nav-btns{display:flex;gap:8px;margin-top:24px;}
+.btn-back{background:transparent;border:1.5px solid var(--border);color:var(--muted);padding:13px 18px;border-radius:50px;font-size:14px;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all 0.2s;}
+.btn-back:hover{border-color:var(--teal);color:var(--teal);}
+.btn-next{flex:1;background:var(--sage);color:#fff;border:none;padding:13px 24px;border-radius:50px;font-size:15px;font-family:'DM Sans',sans-serif;font-weight:500;cursor:pointer;transition:all 0.2s;}
+.btn-next:hover{background:var(--sage-d);}
+.info-note{background:var(--teal-l);border-radius:var(--rs);padding:11px 14px;font-size:12px;color:#1A6B60;margin-bottom:16px;line-height:1.5;border-left:3px solid var(--teal);}
+.chat-outer{display:flex;flex-direction:column;flex:1;overflow:hidden;}
+.chat-head{padding:13px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;background:var(--white);}
+.s-av{width:40px;height:40px;background:var(--sage);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;position:relative;}
+.online-dot{width:9px;height:9px;background:#4CAF50;border-radius:50%;border:2px solid white;position:absolute;bottom:0;right:0;}
+.chat-msgs{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;background:var(--bg);min-height:300px;max-height:calc(100vh - 220px);}
+.msg{max-width:82%;padding:11px 15px;border-radius:18px;font-size:14px;line-height:1.65;}
+.msg.sofia{background:var(--white);border:1px solid var(--border);align-self:flex-start;border-bottom-left-radius:4px;color:var(--text);}
+.msg.user{background:var(--sage);color:#fff;align-self:flex-end;border-bottom-right-radius:4px;}
+.dots{display:flex;gap:4px;padding:4px 0;}
+.dots span{width:6px;height:6px;background:var(--sage-m);border-radius:50%;animation:bounce 1.2s infinite;}
+.dots span:nth-child(2){animation-delay:0.2s;}
+.dots span:nth-child(3){animation-delay:0.4s;}
+@keyframes bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-5px)}}
+.chips{display:flex;gap:7px;padding:10px 12px 4px;flex-wrap:wrap;background:var(--bg);border-bottom:1px solid var(--border);}
+.chip{padding:7px 13px;background:var(--white);border:1px solid var(--border);border-radius:50px;font-size:12px;color:var(--sage);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.2s;white-space:nowrap;}
+.chip:hover{background:var(--sage);color:#fff;border-color:var(--sage);}
+.chat-in{padding:10px 12px;background:var(--white);border-top:1px solid var(--border);display:flex;gap:8px;align-items:center;}
+.chat-field{flex:1;padding:11px 16px;border:1.5px solid var(--border);border-radius:50px;font-size:14px;font-family:'DM Sans',sans-serif;outline:none;background:var(--bg);color:var(--text);transition:border-color 0.2s;}
+.chat-field::placeholder{color:#9BB5B0;}
+.chat-field:focus{border-color:var(--teal);}
+.chat-send{width:40px;height:40px;background:var(--sage);border:none;border-radius:50%;color:#fff;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:all 0.2s;flex-shrink:0;}
+.chat-send:hover{background:var(--sage-d);}
+.bnav{position:fixed;bottom:0;left:0;right:0;background:rgba(247,250,249,0.97);backdrop-filter:blur(12px);border-top:1px solid var(--border);display:flex;justify-content:space-around;padding:8px 0 16px;z-index:99;}
+.bnav-btn{display:flex;flex-direction:column;align-items:center;gap:2px;background:none;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:10px;color:var(--muted);padding:6px 16px;transition:all 0.2s;}
+.bnav-btn.active{color:var(--teal);}
+.bnav-icon{font-size:19px;}
+.gen-wrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;text-align:center;}
+.pulse{width:68px;height:68px;border-radius:50%;background:var(--teal-l);border:1.5px solid var(--sage-m);margin:0 auto 22px;display:flex;align-items:center;justify-content:center;animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{transform:scale(1);box-shadow:0 0 0 0 rgba(42,157,143,0.2)}50%{transform:scale(1.04);box-shadow:0 0 0 10px rgba(42,157,143,0)}}
+.gen-title{font-size:20px;font-weight:300;color:var(--text);margin-bottom:8px;}
+.gen-sub{font-size:14px;color:var(--muted);font-weight:300;}
+</style>
+</head>
+<body>
+
+<div id="s-login" class="screen active">
+  <div class="auth-wrap">
+    <div class="logo-lg"><span class="sof">sof</span><span class="ia">ía</span></div>
+    <div class="auth-tagline">tu salud, organizada de forma inteligente.</div>
+    <div class="auth-card">
+      <div class="auth-title">Bienvenida de nuevo</div>
+      <div class="auth-sub">Inicia sesión para continuar</div>
+      <div class="msg-box" id="login-msg"></div>
+      <div class="field"><label>Correo electrónico</label><input type="email" id="login-email" placeholder="tu@correo.com" autocomplete="email"></div>
+      <div class="field"><label>Contraseña</label><input type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"></div>
+      <button class="btn-main" id="login-btn" onclick="doLogin()">Iniciar sesión</button>
+      <div class="divider"><span>o</span></div>
+      <button class="btn-google" onclick="doGoogle()">
+        <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+        Continuar con Google
+      </button>
+    </div>
+    <div class="auth-switch">¿Primera vez? <a onclick="showRegister()">Crear cuenta</a></div>
+  </div>
+</div>
+
+<div id="s-register" class="screen">
+  <div class="auth-wrap">
+    <div class="logo-lg"><span class="sof">sof</span><span class="ia">ía</span></div>
+    <div class="auth-tagline">tu salud, organizada de forma inteligente.</div>
+    <div class="auth-card">
+      <div class="auth-title">Crear tu cuenta</div>
+      <div class="auth-sub">Empieza tu camino de salud preventiva</div>
+      <div class="msg-box" id="reg-msg"></div>
+      <div class="field"><label>Tu nombre completo</label><input type="text" id="reg-name" placeholder="¿Cómo te llamas?" autocomplete="name"></div>
+      <div class="field"><label>Correo electrónico</label><input type="email" id="reg-email" placeholder="tu@correo.com" autocomplete="email"></div>
+      <div class="field"><label>Contraseña</label><input type="password" id="reg-pass" placeholder="Mínimo 6 caracteres" autocomplete="new-password" onkeydown="if(event.key==='Enter')doRegister()"></div>
+      <button class="btn-main" id="reg-btn" onclick="doRegister()">Crear cuenta</button>
+      <div class="divider"><span>o</span></div>
+      <button class="btn-google" onclick="doGoogle()">
+        <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+        Continuar con Google
+      </button>
+    </div>
+    <div class="auth-switch">¿Ya tienes cuenta? <a onclick="showLogin()">Iniciar sesión</a></div>
+  </div>
+</div>
+
+<div id="s-verify" class="screen">
+  <div class="auth-wrap">
+    <div class="logo-lg"><span class="sof">sof</span><span class="ia">ía</span></div>
+    <div class="auth-card" style="text-align:center;">
+      <div style="font-size:44px;margin-bottom:16px;">📬</div>
+      <div class="auth-title">Revisa tu correo</div>
+      <div class="auth-sub" id="verify-txt">Te enviamos un enlace de confirmación.</div>
+      <button class="btn-main" style="margin-top:16px;" onclick="showLogin()">Ya confirmé → Iniciar sesión</button>
+    </div>
+  </div>
+</div>
+
+<div id="s-home" class="screen">
+  <div class="nav">
+    <div class="logo"><span class="sof">sof</span><span class="ia">ía</span></div>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <div class="user-pill"><div class="user-avatar" id="home-avatar">?</div><div class="user-name" id="home-uname">...</div></div>
+      <button class="btn-sm" onclick="doLogout()">Salir</button>
+    </div>
+  </div>
+  <div class="content">
+    <div class="welcome-hero">
+      <div class="welcome-greeting">Hola, <em id="home-fname">amiga</em> 👋</div>
+      <div class="welcome-sub" id="home-sub">Bienvenida a tu espacio de salud preventiva</div>
+    </div>
+    <div id="no-assess-view">
+      <div class="section-card" style="text-align:center;padding:36px 20px;">
+        <div style="font-size:42px;margin-bottom:14px;">🌿</div>
+        <div style="font-size:17px;font-weight:400;margin-bottom:10px;">Empieza tu evaluación</div>
+        <div style="font-size:13px;color:var(--muted);margin-bottom:24px;font-weight:300;line-height:1.7;max-width:280px;margin-left:auto;margin-right:auto;">sofía te hace un chequeo completo y crea tu plan 100% personalizado.</div>
+        <button class="btn-primary" onclick="goApp('assess')">Comenzar evaluación →</button>
+      </div>
+    </div>
+    <div id="dash-view" style="display:none;">
+      <div class="score-card">
+        <div class="score-top"><div><div class="score-label">Puntaje preventivo</div><div class="score-num" id="d-score">--</div></div><div class="score-badge" id="d-nivel">--</div></div>
+        <div class="score-desc" id="d-msg">Tu plan personalizado</div>
+        <div class="score-progress"><div class="score-fill" id="d-bar" style="width:0%"></div></div>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-icon">⚖️</div><div class="stat-label">IMC</div><div class="stat-val" id="d-imc">--</div><div class="stat-sub" id="d-imc-sub">--</div></div>
+        <div class="stat-card"><div class="stat-icon">🏃</div><div class="stat-label">Actividad</div><div class="stat-val" id="d-act">--</div><div class="stat-sub">semanal</div></div>
+        <div class="stat-card"><div class="stat-icon">😴</div><div class="stat-label">Sueño</div><div class="stat-val" id="d-sue">--</div><div class="stat-sub">calidad</div></div>
+      </div>
+      <div class="section-card"><div class="section-label">Factores de riesgo</div><div id="d-risks"></div></div>
+      <div class="section-card"><div class="section-label">Tu perfil de hábitos</div><div class="habits-grid" id="d-habits"></div></div>
+      <div class="section-card"><div class="section-label">Recomendaciones de sofía</div><div id="d-recs"></div></div>
+      <button class="btn-primary" onclick="goApp('chat')">Hablar con sofía 💬</button>
+      <button class="btn-outline" onclick="goApp('assess')">Actualizar evaluación</button>
+    </div>
+  </div>
+  <div class="bnav">
+    <button class="bnav-btn active" onclick="goApp('home')"><span class="bnav-icon">🏠</span>Inicio</button>
+    <button class="bnav-btn" onclick="goApp('assess')"><span class="bnav-icon">📋</span>Evaluación</button>
+    <button class="bnav-btn" onclick="goApp('chat')"><span class="bnav-icon">💬</span>sofía</button>
+  </div>
+</div>
+
+<div id="s-assess" class="screen">
+  <div class="nav"><div class="logo"><span class="sof">sof</span><span class="ia">ía</span></div><button class="btn-sm" onclick="goApp('home')">← Volver</button></div>
+  <div class="assess-wrap">
+    <div class="step-ind">Paso <span id="as-step">1</span> de 10</div>
+    <div class="prog-wrap"><div class="prog-fill" id="as-prog" style="width:10%"></div></div>
+
+    <div id="as1">
+      <div class="q-title">¿Quién eres?</div>
+      <div class="q-sub">La base de tu evaluación preventiva personalizada.</div>
+      <div class="frow"><div class="fgroup"><label class="flabel">Edad</label><input class="finput" id="a-edad" type="number" placeholder="28"></div><div class="fgroup"><label class="flabel">Sexo biológico</label><select class="finput" id="a-sexo"><option value="">Seleccionar</option><option value="femenino">Femenino</option><option value="masculino">Masculino</option></select></div></div>
+      <div class="frow"><div class="fgroup"><label class="flabel">Peso (kg)</label><input class="finput" id="a-peso" type="number" placeholder="60"></div><div class="fgroup"><label class="flabel">Estatura (cm)</label><input class="finput" id="a-est" type="number" placeholder="165"></div></div>
+      <div class="frow"><div class="fgroup"><label class="flabel">Ciudad</label><input class="finput" id="a-ciudad" placeholder="Medellín"></div><div class="fgroup"><label class="flabel">EPS / Seguro</label><input class="finput" id="a-eps" placeholder="Colsanitas"></div></div>
+      <div class="nav-btns"><button class="btn-next" onclick="asNext(1)">Continuar →</button></div>
+    </div>
+
+    <div id="as2" style="display:none;">
+      <div id="as2-fem" style="display:none;">
+        <div class="q-title">Salud femenina 🌸</div>
+        <div class="q-sub">Clave para tus recomendaciones preventivas.</div>
+        <div class="fgroup"><label class="flabel">Ciclo menstrual</label><div class="opt-grid"><button class="opt-btn" data-v="regular" onclick="selOpt(this,'ciclo')">✅ Regular (21-35 días)</button><button class="opt-btn" data-v="irregular" onclick="selOpt(this,'ciclo')">⚠️ Irregular</button><button class="opt-btn" data-v="ausente" onclick="selOpt(this,'ciclo')">❌ Ausente</button><button class="opt-btn" data-v="menopausia" onclick="selOpt(this,'ciclo')">🌸 Menopausia</button></div></div>
+        <div class="fgroup" style="margin-top:14px;"><label class="flabel">Duración del período</label><div class="opt-grid"><button class="opt-btn" data-v="corto" onclick="selOpt(this,'dur_p')">1-3 días</button><button class="opt-btn" data-v="normal_p" onclick="selOpt(this,'dur_p')">4-6 días</button><button class="opt-btn" data-v="largo_p" onclick="selOpt(this,'dur_p')">7+ días</button><button class="opt-btn" data-v="na_p" onclick="selOpt(this,'dur_p')">No aplica</button></div></div>
+        <div class="fgroup" style="margin-top:14px;"><label class="flabel">Intensidad del flujo</label><div class="opt-grid"><button class="opt-btn" data-v="escaso" onclick="selOpt(this,'flujo')">💧 Escaso</button><button class="opt-btn" data-v="normal_f" onclick="selOpt(this,'flujo')">💧💧 Normal</button><button class="opt-btn" data-v="abundante" onclick="selOpt(this,'flujo')">💧💧💧 Abundante</button><button class="opt-btn" data-v="muy_abundante" onclick="selOpt(this,'flujo')">⚠️ Muy abundante</button></div></div>
+        <div class="fgroup" style="margin-top:14px;"><label class="flabel">Síntomas durante el período</label>
+          <div class="check-list">
+            <div class="check-item" onclick="togChk(this,'dismenorrea')">😣 Dolor fuerte (dismenorrea)</div>
+            <div class="check-item" onclick="togChk(this,'spm')">😢 Síndrome premenstrual (SPM)</div>
+            <div class="check-item" onclick="togChk(this,'coagulos')">🔴 Coágulos frecuentes</div>
+            <div class="check-item" onclick="togChk(this,'fatiga_p')">😴 Fatiga extrema</div>
+            <div class="check-item" onclick="togChk(this,'sin_sint')">✅ Sin síntomas relevantes</div>
+          </div>
+        </div>
+        <div class="fgroup" style="margin-top:14px;"><label class="flabel">Anticoncepción actual</label><div class="opt-grid"><button class="opt-btn" data-v="ninguno_ac" onclick="selOpt(this,'anticonc')">Ninguno</button><button class="opt-btn" data-v="pildora" onclick="selOpt(this,'anticonc')">💊 Píldora</button><button class="opt-btn" data-v="diu" onclick="selOpt(this,'anticonc')">🔵 DIU</button><button class="opt-btn" data-v="implante" onclick="selOpt(this,'anticonc')">💉 Implante</button><button class="opt-btn" data-v="preservativo" onclick="selOpt(this,'anticonc')">Preservativo</button><button class="opt-btn" data-v="otro_ac" onclick="selOpt(this,'anticonc')">Otro</button></div></div>
+        <div class="fgroup" style="margin-top:14px;"><label class="flabel">Último Papanicolau / citología</label><div class="opt-grid"><button class="opt-btn" data-v="pap_1" onclick="selOpt(this,'pap')">✅ Menos de 1 año</button><button class="opt-btn" data-v="pap_3" onclick="selOpt(this,'pap')">🕐 1-3 años</button><button class="opt-btn" data-v="pap_mas3" onclick="selOpt(this,'pap')">⚠️ Más de 3 años</button><button class="opt-btn" data-v="pap_nunca" onclick="selOpt(this,'pap')">❓ Nunca</button></div></div>
+      </div>
+      <div id="as2-trab" style="display:none;">
+        <div class="q-title">Tu trabajo y rutina</div>
+        <div class="q-sub">Tu ocupación impacta tu salud preventiva.</div>
+        <div class="fgroup"><label class="flabel">¿A qué te dedicas?</label><div class="opt-grid"><button class="opt-btn" data-v="estudiante" onclick="selOpt(this,'trabajo')">🎓 Estudiante</button><button class="opt-btn" data-v="oficina" onclick="selOpt(this,'trabajo')">💻 Oficina / remoto</button><button class="opt-btn" data-v="fisico" onclick="selOpt(this,'trabajo')">🏗️ Trabajo físico</button><button class="opt-btn" data-v="salud" onclick="selOpt(this,'trabajo')">🏥 Área de salud</button><button class="opt-btn" data-v="emprendedor" onclick="selOpt(this,'trabajo')">🚀 Emprendedor/a</button><button class="opt-btn" data-v="otro_t" onclick="selOpt(this,'trabajo')">✨ Otro</button></div></div>
+      </div>
+      <div class="nav-btns"><button class="btn-back" onclick="asPrev(2)">← Atrás</button><button class="btn-next" onclick="asNext(2)">Continuar →</button></div>
+    </div>
+
+    <div id="as3" style="display:none;">
+      <div id="as3-trab-fem" style="display:none;">
+        <div class="q-title">Tu trabajo y rutina</div>
+        <div class="q-sub">Tu ocupación impacta tu salud preventiva.</div>
+        <div class="fgroup"><label class="flabel">¿A qué te dedicas?</label><div class="opt-grid"><button class="opt-btn" data-v="estudiante" onclick="selOpt(this,'trabajo')">🎓 Estudiante</button><button class="opt-btn" data-v="oficina" onclick="selOpt(this,'trabajo')">💻 Oficina / remoto</button><button class="opt-btn" data-v="fisico" onclick="selOpt(this,'trabajo')">🏗️ Trabajo físico</button><button class="opt-btn" data-v="salud" onclick="selOpt(this,'trabajo')">🏥 Área de salud</button><button class="opt-btn" data-v="emprendedor" onclick="selOpt(this,'trabajo')">🚀 Emprendedor/a</button><button class="opt-btn" data-v="otro_t" onclick="selOpt(this,'trabajo')">✨ Otro</button></div></div>
+      </div>
+      <div id="as3-act-masc" style="display:none;">
+        <div class="q-title">Movimiento y descanso</div>
+        <div class="q-sub">Dos pilares fundamentales de tu salud.</div>
+        <div class="fgroup"><label class="flabel">Actividad física semanal</label><div class="opt-grid"><button class="opt-btn" data-v="ninguna" onclick="selOpt(this,'act')">🪑 Ninguna</button><button class="opt-btn" data-v="leve" onclick="selOpt(this,'act')">🚶 1-2 veces/sem</button><button class="opt-btn" data-v="moderada" onclick="selOpt(this,'act')">🏃 3-4 veces/sem</button><button class="opt-btn" data-v="intensa" onclick="selOpt(this,'act')">💪 5+ veces/sem</button></div></div>
+        <div class="fgroup" style="margin-top:14px;"><label class="flabel">Tipo de ejercicio</label><div class="opt-grid"><button class="opt-btn" data-v="cardio" onclick="selOpt(this,'tipo_ej')">🏃 Cardio</button><button class="opt-btn" data-v="fuerza" onclick="selOpt(this,'tipo_ej')">🏋️ Fuerza</button><button class="opt-btn" data-v="yoga" onclick="selOpt(this,'tipo_ej')">🧘 Yoga</button><button class="opt-btn" data-v="deportes" onclick="selOpt(this,'tipo_ej')">⚽ Deportes</button><button class="opt-btn" data-v="caminata" onclick="selOpt(this,'tipo_ej')">🚶 Caminatas</button><button class="opt-btn" data-v="nada" onclick="selOpt(this,'tipo_ej')">💤 No hago</button></div></div>
+        <div class="fgroup" style="margin-top:14px;"><label class="flabel">Calidad del sueño</label><div class="opt-grid"><button class="opt-btn" data-v="malo" onclick="selOpt(this,'sueno')">😴 Malo (&lt;6h)</button><button class="opt-btn" data-v="regular" onclick="selOpt(this,'sueno')">😐 Regular (6-7h)</button><button class="opt-btn" data-v="bueno" onclick="selOpt(this,'sueno')">😊 Bueno (7-8h)</button><button class="opt-btn" data-v="excelente" onclick="selOpt(this,'sueno')">✨ Excelente (8h+)</button></div></div>
+      </div>
+      <div class="nav-btns"><button class="btn-back" onclick="asPrev(3)">← Atrás</button><button class="btn-next" onclick="asNext(3)">Continuar →</button></div>
+    </div>
+
+    <div id="as4" style="display:none;">
+      <div id="as4-act-fem" style="display:none;">
+        <div class="q-title">Movimiento y descanso</div>
+        <div class="q-sub">Dos pilares fundamentales de tu salud.</div>
+        <div class="fgroup"><label class="flabel">Actividad física semanal</label><div class="opt-grid"><button class="opt-btn" data-v="ninguna" onclick="selOpt(this,'act')">🪑 Ninguna</button><button class="opt-btn" data-v="leve" onclick="selOpt(this,'act')">🚶 1-2 veces/sem</button><button class="opt-btn" data-v="moderada" onclick="selOpt(this,'act')">🏃 3-4 veces/sem</button><button class="opt-btn" data-v="intensa" onclick="selOpt(this,'act')">💪 5+ veces/sem</button></div></div>
+        <div class="fgroup" style="margin-top:14px;"><label class="flabel">Tipo de ejercicio</label><div class="opt-grid"><button class="opt-btn" data-v="cardio" onclick="selOpt(this,'tipo_ej')">🏃 Cardio</button><button class="opt-btn" data-v="fuerza" onclick="selOpt(this,'tipo_ej')">🏋️ Fuerza</button><button class="opt-btn" data-v="yoga" onclick="selOpt(this,'tipo_ej')">🧘 Yoga</button><button class="opt-btn" data-v="deportes" onclick="selOpt(this,'tipo_ej')">⚽ Deportes</button><button class="opt-btn" data-v="caminata" onclick="selOpt(this,'tipo_ej')">🚶 Caminatas</button><button class="opt-btn" data-v="nada" onclick="selOpt(this,'tipo_ej')">💤 No hago</button></div></div>
+        <div class="fgroup" style="margin-top:14px;"><label class="flabel">Calidad del sueño</label><div class="opt-grid"><button class="opt-btn" data-v="malo" onclick="selOpt(this,'sueno')">😴 Malo (&lt;6h)</button><button class="opt-btn" data-v="regular" onclick="selOpt(this,'sueno')">😐 Regular (6-7h)</button><button class="opt-btn" data-v="bueno" onclick="selOpt(this,'sueno')">😊 Bueno (7-8h)</button><button class="opt-btn" data-v="excelente" onclick="selOpt(this,'sueno')">✨ Excelente (8h+)</button></div></div>
+      </div>
+      <div id="as4-alim-masc">
+        <div class="q-title">Alimentación</div>
+        <div class="q-sub">Tu dieta habla de tu salud futura.</div>
+        <div class="fgroup"><label class="flabel">¿Cómo describes tu alimentación?</label><div class="opt-grid"><button class="opt-btn" data-v="saludable" onclick="selOpt(this,'dieta')">🥗 Saludable</button><button class="opt-btn" data-v="regular" onclick="selOpt(this,'dieta')">😐 Regular</button><button class="opt-btn" data-v="procesada" onclick="selOpt(this,'dieta')">🍔 Mucho procesado</button><button class="opt-btn" data-v="vegetariana" onclick="selOpt(this,'dieta')">🌱 Vegetariana</button><button class="opt-btn" data-v="vegana" onclick="selOpt(this,'dieta')">🌿 Vegana</button><button class="opt-btn" data-v="variable" onclick="selOpt(this,'dieta')">🔄 Variable</button></div></div>
+        <div class="fgroup" style="margin-top:14px;"><label class="flabel">Agua diaria</label><div class="opt-grid"><button class="opt-btn" data-v="poco" onclick="selOpt(this,'agua')">💧 Menos de 1L</button><button class="opt-btn" data-v="regular_a" onclick="selOpt(this,'agua')">💧💧 1-1.5L</button><button class="opt-btn" data-v="bueno_a" onclick="selOpt(this,'agua')">💧💧💧 1.5-2L</button><button class="opt-btn" data-v="excelente_a" onclick="selOpt(this,'agua')">✅ Más de 2L</button></div></div>
+        <div class="fgroup" style="margin-top:14px;"><label class="flabel">Alergias alimentarias</label><input class="finput" id="a-alergias-m" placeholder="Ej: gluten, lactosa, ninguna..."></div>
+      </div>
+      <div class="nav-btns"><button class="btn-back" onclick="asPrev(4)">← Atrás</button><button class="btn-next" onclick="asNext(4)">Continuar →</button></div>
+    </div>
+
+    <div id="as5" style="display:none;">
+      <div id="as5-alim-fem" style="display:none;">
+        <div class="q-title">Alimentación</div>
+        <div class="q-sub">Tu dieta habla de tu salud futura.</div>
+        <div class="fgroup"><label class="flabel">¿Cómo describes tu alimentación?</label><div class="opt-grid"><button class="opt-btn" data-v="saludable" onclick="selOpt(this,'dieta')">🥗 Saludable</button><button class="opt-btn" data-v="regular" onclick="selOpt(this,'dieta')">😐 Regular</button><button class="opt-btn" data-v="procesada" onclick="selOpt(this,'dieta')">🍔 Mucho procesado</button><button class="opt-btn" data-v="vegetariana" onclick="selOpt(this,'dieta')">🌱 Vegetariana</button><button class="opt-btn" data-v="vegana" onclick="selOpt(this,'dieta')">🌿 Vegana</button><button class="opt-btn" data-v="variable" onclick="selOpt(this,'dieta')">🔄 Variable</button></div></div>
+        <div class="fgroup" style="margin-top:14px;"><label class="flabel">Agua diaria</label><div class="opt-grid"><button class="opt-btn" data-v="poco" onclick="selOpt(this,'agua')">💧 Menos de 1L</button><button class="opt-btn" data-v="regular_a" onclick="selOpt(this,'agua')">💧💧 1-1.5L</button><button class="opt-btn" data-v="bueno_a" onclick="selOpt(this,'agua')">💧💧💧 1.5-2L</button><button class="opt-btn" data-v="excelente_a" onclick="selOpt(this,'agua')">✅ Más de 2L</button></div></div>
+        <div class="fgroup" style="margin-top:14px;"><label class="flabel">Alergias alimentarias</label><input class="finput" id="a-alergias-f" placeholder="Ej: gluten, lactosa, ninguna..."></div>
+      </div>
+      <div id="as5-habitos-masc">
+        <div class="q-title">Hábitos y consumos</div>
+        <div class="q-sub">Confidencial. Necesario para una evaluación honesta.</div>
+        <div class="info-note">💙 Esta información es privada y solo la usa sofía para personalizarte.</div>
+        <div class="check-list">
+          <div class="check-item" onclick="togChk(this,'fumador')">🚬 Fumo actualmente</div>
+          <div class="check-item" onclick="togChk(this,'ex_fumador')">🚭 Fui fumador/a</div>
+          <div class="check-item" onclick="togChk(this,'alcohol')">🍷 Consumo alcohol regularmente</div>
+          <div class="check-item" onclick="togChk(this,'sedentario_h')">🪑 Paso más de 8h sentado/a</div>
+          <div class="check-item" onclick="togChk(this,'pantallas')">📱 Uso pantallas más de 6h</div>
+          <div class="check-item" onclick="togChk(this,'cafeina')">☕ Mucha cafeína (+4 tazas/día)</div>
+          <div class="check-item" onclick="togChk(this,'ninguno_h')">✅ Ninguno</div>
+        </div>
+      </div>
+      <div class="nav-btns"><button class="btn-back" onclick="asPrev(5)">← Atrás</button><button class="btn-next" onclick="asNext(5)">Continuar →</button></div>
+    </div>
+
+    <div id="as6" style="display:none;">
+      <div id="as6-habitos-fem" style="display:none;">
+        <div class="q-title">Hábitos y consumos</div>
+        <div class="q-sub">Confidencial. Para una evaluación honesta.</div>
+        <div class="info-note">💙 Esta información es privada.</div>
+        <div class="check-list">
+          <div class="check-item" onclick="togChk(this,'fumador')">🚬 Fumo actualmente</div>
+          <div class="check-item" onclick="togChk(this,'ex_fumador')">🚭 Fui fumador/a</div>
+          <div class="check-item" onclick="togChk(this,'alcohol')">🍷 Consumo alcohol regularmente</div>
+          <div class="check-item" onclick="togChk(this,'sedentario_h')">🪑 Paso más de 8h sentado/a</div>
+          <div class="check-item" onclick="togChk(this,'pantallas')">📱 Uso pantallas más de 6h</div>
+          <div class="check-item" onclick="togChk(this,'cafeina')">☕ Mucha cafeína</div>
+          <div class="check-item" onclick="togChk(this,'ninguno_h')">✅ Ninguno</div>
+        </div>
+      </div>
+      <div id="as6-condiciones-masc">
+        <div class="q-title">Condiciones actuales</div>
+        <div class="q-sub">Diagnósticos activos y medicamentos.</div>
+        <div class="fgroup"><label class="flabel">Condiciones diagnosticadas</label>
+          <div class="check-list">
+            <div class="check-item" onclick="togChk(this,'hipotiroidismo')">🦋 Hipotiroidismo / hipertiroidismo</div>
+            <div class="check-item" onclick="togChk(this,'diabetes_dx')">🩸 Diabetes / prediabetes</div>
+            <div class="check-item" onclick="togChk(this,'hta_dx')">❤️ Hipertensión arterial</div>
+            <div class="check-item" onclick="togChk(this,'ansiedad_dx')">🧠 Ansiedad / depresión</div>
+            <div class="check-item" onclick="togChk(this,'colesterol_dx')">🫀 Colesterol alto</div>
+            <div class="check-item" onclick="togChk(this,'ninguna_dx')">✅ Ninguna</div>
+          </div>
+        </div>
+        <div class="fgroup" style="margin-top:14px;"><label class="flabel">Otra condición</label><input class="finput" id="a-condicion-m" placeholder="Ej: artritis, ninguna..."></div>
+        <div class="fgroup" style="margin-top:14px;"><label class="flabel">Medicamentos actuales</label><input class="finput" id="a-meds-m" placeholder="Ej: metformina, ninguno..."></div>
+      </div>
+      <div class="nav-btns"><button class="btn-back" onclick="asPrev(6)">← Atrás</button><button class="btn-next" onclick="asNext(6)">Continuar →</button></div>
+    </div>
+
+    <div id="as7" style="display:none;">
+      <div id="as7-condiciones-fem" style="display:none;">
+        <div class="q-title">Condiciones actuales</div>
+        <div class="q-sub">Diagnósticos activos y medicamentos.</div>
+        <div class="fgroup"><label class="flabel">Condiciones diagnosticadas</label>
+          <div class="check-list">
+            <div class="check-item" onclick="togChk(this,'hipotiroidismo')">🦋 Hipotiroidismo / hipertiroidismo</div>
+            <div class="check-item" onclick="togChk(this,'diabetes_dx')">🩸 Diabetes / prediabetes</div>
+            <div class="check-item" onclick="togChk(this,'hta_dx')">❤️ Hipertensión arterial</div>
+            <div class="check-item" onclick="togChk(this,'ansiedad_dx')">🧠 Ansiedad / depresión</div>
+            <div class="check-item" onclick="togChk(this,'sop')">🌸 SOP</div>
+            <div class="check-item" onclick="togChk(this,'colesterol_dx')">🫀 Colesterol alto</div>
+            <div class="check-item" onclick="togChk(this,'ninguna_dx')">✅ Ninguna</div>
+          </div>
+        </div>
+        <div class="fgroup" style="margin-top:14px;"><label class="flabel">Otra condición</label><input class="finput" id="a-condicion-f" placeholder="Ej: endometriosis, ninguna..."></div>
+        <div class="fgroup" style="margin-top:14px;"><label class="flabel">Medicamentos actuales</label><input class="finput" id="a-meds-f" placeholder="Ej: levotiroxina, ninguno..."></div>
+      </div>
+      <div id="as7-antec-masc">
+        <div class="q-title">Antecedentes familiares</div>
+        <div class="q-sub">Padres, abuelos, hermanos. Confidencial.</div>
+        <div class="check-list">
+          <div class="check-item" onclick="togChk(this,'fam_diabetes')">🩸 Diabetes tipo 2</div>
+          <div class="check-item" onclick="togChk(this,'fam_hta')">❤️ Hipertensión</div>
+          <div class="check-item" onclick="togChk(this,'fam_cancer')">🎗️ Cáncer</div>
+          <div class="check-item" onclick="togChk(this,'fam_cardio')">🫀 Enfermedades cardiovasculares</div>
+          <div class="check-item" onclick="togChk(this,'fam_obesidad')">⚖️ Obesidad</div>
+          <div class="check-item" onclick="togChk(this,'fam_tiroides')">🦋 Tiroides</div>
+          <div class="check-item" onclick="togChk(this,'fam_ninguno')">✅ Ninguno conocido</div>
+        </div>
+      </div>
+      <div class="nav-btns"><button class="btn-back" onclick="asPrev(7)">← Atrás</button><button class="btn-next" onclick="asNext(7)">Continuar →</button></div>
+    </div>
+
+    <div id="as8" style="display:none;">
+      <div id="as8-antec-fem" style="display:none;">
+        <div class="q-title">Antecedentes familiares</div>
+        <div class="q-sub">Padres, abuelos, hermanos. Confidencial.</div>
+        <div class="check-list">
+          <div class="check-item" onclick="togChk(this,'fam_diabetes')">🩸 Diabetes tipo 2</div>
+          <div class="check-item" onclick="togChk(this,'fam_hta')">❤️ Hipertensión</div>
+          <div class="check-item" onclick="togChk(this,'fam_cancer')">🎗️ Cáncer</div>
+          <div class="check-item" onclick="togChk(this,'fam_cardio')">🫀 Enfermedades cardiovasculares</div>
+          <div class="check-item" onclick="togChk(this,'fam_obesidad')">⚖️ Obesidad</div>
+          <div class="check-item" onclick="togChk(this,'fam_tiroides')">🦋 Tiroides</div>
+          <div class="check-item" onclick="togChk(this,'fam_ninguno')">✅ Ninguno conocido</div>
+        </div>
+      </div>
+      <div id="as8-mental-masc">
+        <div class="q-title">Bienestar mental</div>
+        <div class="q-sub">La salud mental es salud. Sin juicios.</div>
+        <div class="fgroup"><label class="flabel">Nivel de estrés</label><div class="opt-grid"><button class="opt-btn" data-v="bajo" onclick="selOpt(this,'estres')">😌 Bajo</button><button class="opt-btn" data-v="moderado" onclick="selOpt(this,'estres')">😐 Moderado</button><button class="opt-btn" data-v="alto" onclick="selOpt(this,'estres')">😰 Alto</button><button class="opt-btn" data-v="muy_alto" onclick="selOpt(this,'estres')">🤯 Muy alto</button></div></div>
+        <div class="fgroup" style="margin-top:14px;"><label class="flabel">Últimas 2 semanas</label><div class="opt-grid"><button class="opt-btn" data-v="muy_bien" onclick="selOpt(this,'emocional')">😊 Muy bien</button><button class="opt-btn" data-v="bien" onclick="selOpt(this,'emocional')">🙂 Bien</button><button class="opt-btn" data-v="regular" onclick="selOpt(this,'emocional')">😐 Regular</button><button class="opt-btn" data-v="mal" onclick="selOpt(this,'emocional')">😔 Difícil</button></div></div>
+        <div class="fgroup" style="margin-top:14px;"><label class="flabel">Apoyo de salud mental</label><div class="opt-grid"><button class="opt-btn" data-v="psicologo" onclick="selOpt(this,'apoyo')">✅ Psicólogo</button><button class="opt-btn" data-v="red" onclick="selOpt(this,'apoyo')">🫂 Red de apoyo</button><button class="opt-btn" data-v="no_necesito" onclick="selOpt(this,'apoyo')">😌 No necesito</button><button class="opt-btn" data-v="no_tengo" onclick="selOpt(this,'apoyo')">🤔 No tengo</button></div></div>
+      </div>
+      <div class="nav-btns"><button class="btn-back" onclick="asPrev(8)">← Atrás</button><button class="btn-next" onclick="asNext(8)">Continuar →</button></div>
+    </div>
+
+    <div id="as9" style="display:none;">
+      <div id="as9-mental-fem" style="display:none;">
+        <div class="q-title">Bienestar mental</div>
+        <div class="q-sub">La salud mental es salud. Sin juicios.</div>
+        <div class="fgroup"><label class="flabel">Nivel de estrés</label><div class="opt-grid"><button class="opt-btn" data-v="bajo" onclick="selOpt(this,'estres')">😌 Bajo</button><button class="opt-btn" data-v="moderado" onclick="selOpt(this,'estres')">😐 Moderado</button><button class="opt-btn" data-v="alto" onclick="selOpt(this,'estres')">😰 Alto</button><button class="opt-btn" data-v="muy_alto" onclick="selOpt(this,'estres')">🤯 Muy alto</button></div></div>
+        <div class="fgroup" style="margin-top:14px;"><label class="flabel">Últimas 2 semanas</label><div class="opt-grid"><button class="opt-btn" data-v="muy_bien" onclick="selOpt(this,'emocional')">😊 Muy bien</button><button class="opt-btn" data-v="bien" onclick="selOpt(this,'emocional')">🙂 Bien</button><button class="opt-btn" data-v="regular" onclick="selOpt(this,'emocional')">😐 Regular</button><button class="opt-btn" data-v="mal" onclick="selOpt(this,'emocional')">😔 Difícil</button></div></div>
+        <div class="fgroup" style="margin-top:14px;"><label class="flabel">Apoyo de salud mental</label><div class="opt-grid"><button class="opt-btn" data-v="psicologo" onclick="selOpt(this,'apoyo')">✅ Psicólogo</button><button class="opt-btn" data-v="red" onclick="selOpt(this,'apoyo')">🫂 Red de apoyo</button><button class="opt-btn" data-v="no_necesito" onclick="selOpt(this,'apoyo')">😌 No necesito</button><button class="opt-btn" data-v="no_tengo" onclick="selOpt(this,'apoyo')">🤔 No tengo</button></div></div>
+      </div>
+      <div id="as9-chequeos-masc">
+        <div class="q-title">Historial de chequeos</div>
+        <div class="q-sub">Para saber qué exámenes tienes y cuáles faltan.</div>
+        <div class="fgroup"><label class="flabel">Último chequeo médico</label><div class="opt-grid"><button class="opt-btn" data-v="menos1" onclick="selOpt(this,'chequeo')">✅ Menos de 1 año</button><button class="opt-btn" data-v="1a2" onclick="selOpt(this,'chequeo')">🕐 1-2 años</button><button class="opt-btn" data-v="mas2" onclick="selOpt(this,'chequeo')">⚠️ Más de 2 años</button><button class="opt-btn" data-v="nunca" onclick="selOpt(this,'chequeo')">❓ No recuerdo</button></div></div>
+        <div class="fgroup" style="margin-top:14px;"><label class="flabel">¿Conoces tus niveles de?</label>
+          <div class="check-list">
+            <div class="check-item" onclick="togChk(this,'sabe_col')">Colesterol y triglicéridos</div>
+            <div class="check-item" onclick="togChk(this,'sabe_gluc')">Glucosa en ayunas</div>
+            <div class="check-item" onclick="togChk(this,'sabe_vitd')">Vitamina D</div>
+            <div class="check-item" onclick="togChk(this,'sabe_tsh')">Hormona tiroidea (TSH)</div>
+            <div class="check-item" onclick="togChk(this,'no_sabe')">No sé ninguno</div>
+          </div>
+        </div>
+      </div>
+      <div class="nav-btns"><button class="btn-back" onclick="asPrev(9)">← Atrás</button><button class="btn-next" onclick="asNext(9)">Continuar →</button></div>
+    </div>
+
+    <div id="as10" style="display:none;">
+      <div id="as10-chequeos-fem" style="display:none;">
+        <div class="q-title">Historial de chequeos</div>
+        <div class="q-sub">Para saber qué exámenes tienes y cuáles faltan.</div>
+        <div class="fgroup"><label class="flabel">Último chequeo médico</label><div class="opt-grid"><button class="opt-btn" data-v="menos1" onclick="selOpt(this,'chequeo')">✅ Menos de 1 año</button><button class="opt-btn" data-v="1a2" onclick="selOpt(this,'chequeo')">🕐 1-2 años</button><button class="opt-btn" data-v="mas2" onclick="selOpt(this,'chequeo')">⚠️ Más de 2 años</button><button class="opt-btn" data-v="nunca" onclick="selOpt(this,'chequeo')">❓ No recuerdo</button></div></div>
+        <div class="fgroup" style="margin-top:14px;"><label class="flabel">¿Conoces tus niveles de?</label>
+          <div class="check-list">
+            <div class="check-item" onclick="togChk(this,'sabe_col')">Colesterol y triglicéridos</div>
+            <div class="check-item" onclick="togChk(this,'sabe_gluc')">Glucosa en ayunas</div>
+            <div class="check-item" onclick="togChk(this,'sabe_vitd')">Vitamina D</div>
+            <div class="check-item" onclick="togChk(this,'sabe_tsh')">Hormona tiroidea (TSH)</div>
+            <div class="check-item" onclick="togChk(this,'no_sabe')">No sé ninguno</div>
+          </div>
+        </div>
+      </div>
+      <div id="as10-obj">
+        <div class="q-title">Tus objetivos 🎯</div>
+        <div class="q-sub">¿En qué quieres que sofía te ayude más?</div>
+        <div class="check-list">
+          <div class="check-item" onclick="togChk(this,'obj_prev')">🛡️ Prevención de enfermedades</div>
+          <div class="check-item" onclick="togChk(this,'obj_energia')">⚡ Más energía y vitalidad</div>
+          <div class="check-item" onclick="togChk(this,'obj_peso')">⚖️ Manejo de peso</div>
+          <div class="check-item" onclick="togChk(this,'obj_estres')">🧘 Reducir estrés</div>
+          <div class="check-item" onclick="togChk(this,'obj_sueno')">😴 Mejorar sueño</div>
+          <div class="check-item" onclick="togChk(this,'obj_hormonal')">🌸 Salud hormonal</div>
+          <div class="check-item" onclick="togChk(this,'obj_deporte')">🏃 Rendimiento físico</div>
+        </div>
+        <div class="fgroup" style="margin-top:14px;"><label class="flabel">¿Algo que quieras contarle a sofía?</label><input class="finput" id="a-nota" placeholder="Ej: me siento cansada todo el tiempo..."></div>
+      </div>
+      <div class="nav-btns"><button class="btn-back" onclick="asPrev(10)">← Atrás</button><button class="btn-next" onclick="submitAssess()">Ver mi evaluación →</button></div>
+    </div>
+  </div>
+  <div class="bnav">
+    <button class="bnav-btn" onclick="goApp('home')"><span class="bnav-icon">🏠</span>Inicio</button>
+    <button class="bnav-btn active"><span class="bnav-icon">📋</span>Evaluación</button>
+    <button class="bnav-btn" onclick="goApp('chat')"><span class="bnav-icon">💬</span>sofía</button>
+  </div>
+</div>
+
+<div id="s-gen" class="screen">
+  <div class="gen-wrap">
+    <div class="pulse">🌿</div>
+    <div class="gen-title">sofía está analizando tu perfil...</div>
+    <div class="gen-sub" id="gen-sub">Procesando tu evaluación</div>
+  </div>
+</div>
+
+<div id="s-chat" class="screen">
+  <div class="nav"><div class="logo"><span class="sof">sof</span><span class="ia">ía</span></div><button class="btn-sm" onclick="goApp('home')">← Volver</button></div>
+  <div class="chat-outer">
+    <div class="chat-head">
+      <div class="s-av">
+        <div style="font-family:'DM Sans',sans-serif;font-size:13px;font-weight:300;"><span style="color:white;">s</span><span style="color:#A8E6DF;font-style:italic;">ía</span></div>
+        <div class="online-dot"></div>
+      </div>
+      <div><div style="font-weight:400;font-size:14px;color:var(--text);">sofía</div><div style="font-size:11px;color:#4CAF50;">● en línea</div></div>
+    </div>
+    <div class="chips" id="chat-chips"></div>
+    <div class="chat-msgs" id="chat-msgs"></div>
+    <div class="chat-in">
+      <input class="chat-field" id="chat-in" placeholder="Pregúntale algo a sofía..." onkeydown="if(event.key==='Enter')sendMsg()">
+      <button class="chat-send" onclick="sendMsg()">↑</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SURL='https://rlypqzwuucfrmhmqdnxp.supabase.co';
+const SKEY='sb_publishable_0hVEgIpm8-EaOaNeGjuPVQ_1NhO4On0';
+const sb=supabase.createClient(SURL,SKEY);
+let currentUser=null,userProfile={},chatHist=[];
+const sel={},chks=[];
+let esFem=false;
+
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo(0,0);}
+function showLogin(){show('s-login');}
+function showRegister(){show('s-register');}
+function showMsg(el,t,type){el.textContent=t;el.className='msg-box '+type;}
+
+async function doLogin(){
+  const email=document.getElementById('login-email').value.trim();
+  const pass=document.getElementById('login-pass').value;
+  const msg=document.getElementById('login-msg');
+  const btn=document.getElementById('login-btn');
+  if(!email||!pass){showMsg(msg,'Completa todos los campos.','error');return;}
+  btn.disabled=true;btn.textContent='Iniciando...';
+  const {data,error}=await sb.auth.signInWithPassword({email,password:pass});
+  btn.disabled=false;btn.textContent='Iniciar sesión';
+  if(error){showMsg(msg,error.message.includes('Invalid')?'Correo o contraseña incorrectos.':error.message,'error');return;}
+  await loadUser(data.user);
+}
+
+async function doRegister(){
+  const name=document.getElementById('reg-name').value.trim();
+  const email=document.getElementById('reg-email').value.trim();
+  const pass=document.getElementById('reg-pass').value;
+  const msg=document.getElementById('reg-msg');
+  const btn=document.getElementById('reg-btn');
+  if(!name||!email||!pass){showMsg(msg,'Completa todos los campos.','error');return;}
+  if(pass.length<6){showMsg(msg,'La contraseña debe tener al menos 6 caracteres.','error');return;}
+  btn.disabled=true;btn.textContent='Creando cuenta...';
+  const {data,error}=await sb.auth.signUp({email,password:pass,options:{data:{full_name:name}}});
+  btn.disabled=false;btn.textContent='Crear cuenta';
+  if(error){showMsg(msg,error.message,'error');return;}
+  document.getElementById('verify-txt').textContent=`Enviamos un enlace a ${email}. Confírmalo y luego inicia sesión.`;
+  show('s-verify');
+}
+
+async function doGoogle(){
+  const {error}=await sb.auth.signInWithOAuth({provider:'google',options:{redirectTo:window.location.origin}});
+  if(error)alert('Error con Google: '+error.message+'. Configura OAuth en Supabase primero.');
+}
+async function doLogout(){await sb.auth.signOut();currentUser=null;userProfile={};chatHist=[];showLogin();}
+
+async function loadUser(user){
+  currentUser=user;
+  const name=user.user_metadata?.full_name||user.email.split('@')[0];
+  const fname=name.split(' ')[0];
+  document.getElementById('home-fname').textContent=fname;
+  document.getElementById('home-uname').textContent=fname;
+  document.getElementById('home-avatar').textContent=fname[0].toUpperCase();
+  document.getElementById('home-sub').textContent=`Bienvenida de nuevo, ${fname} 🌿`;
+  try{const {data}=await sb.from('sofia_profiles').select('*').eq('user_id',user.id).single();if(data){userProfile=data;showDash(data);}else{document.getElementById('no-assess-view').style.display='block';document.getElementById('dash-view').style.display='none';}}catch(e){document.getElementById('no-assess-view').style.display='block';document.getElementById('dash-view').style.display='none';}
+  initChat(fname);show('s-home');
+}
+
+function showDash(p){
+  document.getElementById('no-assess-view').style.display='none';
+  document.getElementById('dash-view').style.display='block';
+  const score=p.score||0;
+  document.getElementById('d-score').textContent=score;
+  document.getElementById('d-bar').style.width=score+'%';
+  document.getElementById('d-msg').textContent=p.msg||'Tu plan personalizado';
+  let nivel='inicio';
+  if(score>=80)nivel='excelente 🌟';else if(score>=65)nivel='bueno 👍';else if(score>=50)nivel='regular ⚡';else nivel='por mejorar 🌱';
+  document.getElementById('d-nivel').textContent=nivel;
+  if(p.imc){document.getElementById('d-imc').textContent=parseFloat(p.imc).toFixed(1);let sub='Normal';if(p.imc<18.5)sub='Bajo peso';else if(p.imc<=24.9)sub='Normal ✓';else if(p.imc<=29.9)sub='Sobrepeso';else sub='Obesidad';document.getElementById('d-imc-sub').textContent=sub;}
+  const actMap={ninguna:'0x',leve:'1-2x',moderada:'3-4x',intensa:'5+x'};
+  document.getElementById('d-act').textContent=actMap[p.actividad]||'--';
+  const sueMap={malo:'😴',regular:'😐',bueno:'😊',excelente:'✨'};
+  document.getElementById('d-sue').textContent=sueMap[p.sueno]||'--';
+  const risks=[];
+  if(p.imc&&p.imc>25)risks.push({name:'Peso corporal',val:Math.min(90,Math.round((p.imc-25)*8)),c:'#E8A62D'});
+  if(p.estres==='alto'||p.estres==='muy_alto')risks.push({name:'Estrés',val:p.estres==='muy_alto'?85:65,c:'#E07070'});
+  if(p.sueno==='malo')risks.push({name:'Calidad del sueño',val:72,c:'#9B8EC4'});
+  if(p.actividad==='ninguna')risks.push({name:'Sedentarismo',val:78,c:'#E8A62D'});
+  if(risks.length===0)risks.push({name:'Riesgo general',val:12,c:'#2A9D8F'});
+  document.getElementById('d-risks').innerHTML=risks.map(r=>`<div class="risk-item"><div class="risk-header"><span class="risk-name">${r.name}</span><span class="risk-val" style="color:${r.c};">${r.val}%</span></div><div class="risk-bar-bg"><div class="risk-bar-fill" style="width:${r.val}%;background:${r.c};"></div></div></div>`).join('');
+  const habits=[{icon:'🏃',bg:'#EBF4F1',label:'Actividad',val:actMap[p.actividad]||'--'},{icon:'💧',bg:'#E8F4FB',label:'Hidratación',val:{poco:'Baja',regular_a:'Media',bueno_a:'Buena',excelente_a:'Óptima'}[p.agua]||'--'},{icon:'🥗',bg:'#F0F8EC',label:'Dieta',val:{saludable:'Saludable',regular:'Regular',procesada:'Mejorable',vegetariana:'Veggie',vegana:'Vegana',variable:'Variable'}[p.dieta]||'--'},{icon:'😴',bg:'#F0EDF8',label:'Sueño',val:{malo:'Malo',regular:'Regular',bueno:'Bueno',excelente:'Excelente'}[p.sueno]||'--'}];
+  document.getElementById('d-habits').innerHTML=habits.map(h=>`<div class="habit-card"><div class="habit-icon" style="background:${h.bg};">${h.icon}</div><div><div class="habit-label">${h.label}</div><div class="habit-val">${h.val}</div></div></div>`).join('');
+  const cols=['#1E6040','#185FA5','#5A4D8A','#B87A00','#1E6040','#C05030'];
+  document.getElementById('d-recs').innerHTML=(p.recomendaciones||[]).map((r,i)=>`<div class="rec-item"><div class="rec-dot" style="background:${cols[i%6]};"></div><span>${r}</span></div>`).join('');
+}
+
+function goApp(s){show('s-'+s);}
+function selOpt(btn,key){btn.parentElement.querySelectorAll('.opt-btn').forEach(b=>b.classList.remove('sel'));btn.classList.add('sel');sel[key]=btn.getAttribute('data-v');}
+function togChk(el,val){el.classList.toggle('chk');const i=chks.indexOf(val);if(i>-1)chks.splice(i,1);else chks.push(val);}
+
+function showStep(n,fem){
+  // Show correct content inside each step based on sex
+  const configs={
+    2:{fem:['as2-fem'],masc:['as2-trab']},
+    3:{fem:['as3-trab-fem'],masc:['as3-act-masc']},
+    4:{fem:['as4-act-fem'],masc:['as4-alim-masc']},
+    5:{fem:['as5-alim-fem'],masc:['as5-habitos-masc']},
+    6:{fem:['as6-habitos-fem'],masc:['as6-condiciones-masc']},
+    7:{fem:['as7-condiciones-fem'],masc:['as7-antec-masc']},
+    8:{fem:['as8-antec-fem'],masc:['as8-mental-masc']},
+    9:{fem:['as9-mental-fem'],masc:['as9-chequeos-masc']},
+    10:{fem:['as10-chequeos-fem','as10-obj'],masc:['as10-obj']}
+  };
+  if(configs[n]){
+    const all=[...configs[n].fem,...configs[n].masc];
+    all.forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none';});
+    const toShow=fem?configs[n].fem:configs[n].masc;
+    toShow.forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='block';});
+  }
+}
+
+function asNext(n){
+  if(n===1){
+    if(!document.getElementById('a-edad').value||!document.getElementById('a-sexo').value||!document.getElementById('a-peso').value||!document.getElementById('a-est').value){alert('Por favor completa edad, sexo, peso y estatura.');return;}
+    esFem=document.getElementById('a-sexo').value==='femenino';
+  }
+  showStep(n+1,esFem);
+  document.getElementById('as'+n).style.display='none';
+  document.getElementById('as'+(n+1)).style.display='block';
+  document.getElementById('as-step').textContent=n+1;
+  document.getElementById('as-prog').style.width=(((n+1)/10)*100)+'%';
+  window.scrollTo(0,0);
+}
+function asPrev(n){
+  showStep(n-1,esFem);
+  document.getElementById('as'+n).style.display='none';
+  document.getElementById('as'+(n-1)).style.display='block';
+  document.getElementById('as-step').textContent=n-1;
+  document.getElementById('as-prog').style.width=(((n-1)/10)*100)+'%';
+  window.scrollTo(0,0);
+}
+
+async function submitAssess(){
+  const edad=parseInt(document.getElementById('a-edad').value)||0;
+  const sexo=document.getElementById('a-sexo').value;
+  const peso=parseFloat(document.getElementById('a-peso').value)||0;
+  const est=parseFloat(document.getElementById('a-est').value)||0;
+  const ciudad=document.getElementById('a-ciudad').value||'Colombia';
+  const eps=document.getElementById('a-eps').value||'';
+  const condicion=esFem?(document.getElementById('a-condicion-f')?.value||'ninguna'):(document.getElementById('a-condicion-m')?.value||'ninguna');
+  const meds=esFem?(document.getElementById('a-meds-f')?.value||'ninguno'):(document.getElementById('a-meds-m')?.value||'ninguno');
+  const alergias=esFem?(document.getElementById('a-alergias-f')?.value||'ninguna'):(document.getElementById('a-alergias-m')?.value||'ninguna');
+  const nota=document.getElementById('a-nota')?.value||'';
+  const imc=est>0?peso/Math.pow(est/100,2):null;
+  const act=sel['act']||'',sue=sel['sueno']||'',str=sel['estres']||'';
+  const dieta=sel['dieta']||'',agua=sel['agua']||'',chequeo=sel['chequeo']||'';
+  const emocional=sel['emocional']||'',trabajo=sel['trabajo']||'';
+  const ciclo=sel['ciclo']||'',dur_p=sel['dur_p']||'',flujo=sel['flujo']||'';
+  const anticonc=sel['anticonc']||'',pap=sel['pap']||'';
+  const sintomas_p=chks.filter(c=>['dismenorrea','spm','coagulos','fatiga_p','sin_sint'].includes(c)).join(', ')||'ninguno';
+
+  let score=60;
+  if(act==='moderada')score+=8;else if(act==='intensa')score+=12;else if(act==='leve')score+=4;else score-=6;
+  if(sue==='bueno')score+=6;else if(sue==='excelente')score+=10;else if(sue==='malo')score-=8;
+  if(str==='bajo')score+=6;else if(str==='alto')score-=6;else if(str==='muy_alto')score-=12;
+  if(imc&&imc>=18.5&&imc<=24.9)score+=6;else if(imc&&imc>30)score-=8;
+  if(dieta==='saludable')score+=5;else if(dieta==='procesada')score-=5;
+  if(agua==='excelente_a')score+=4;else if(agua==='poco')score-=4;
+  if(chequeo==='menos1')score+=5;else if(chequeo==='nunca')score-=8;
+  if(emocional==='muy_bien')score+=4;else if(emocional==='mal')score-=6;
+  if(chks.includes('fumador'))score-=10;if(chks.includes('sedentario_h'))score-=5;if(chks.includes('alcohol'))score-=4;
+  score=Math.min(100,Math.max(15,Math.round(score)));
+
+  goApp('gen');
+  const gmsgs=['Analizando tu historial...','Evaluando factores de riesgo...','Consultando guías preventivas...','Generando tu plan...'];
+  let gi=0;const gi_int=setInterval(()=>{const el=document.getElementById('gen-sub');if(el)el.textContent=gmsgs[gi%gmsgs.length];gi++;},1800);
+
+  const name=currentUser.user_metadata?.full_name||currentUser.email.split('@')[0];
+  const fname=name.split(' ')[0];
+
+  const prompt=`Eres sofía, asistente médica preventiva experta. Genera recomendaciones MUY personalizadas en español colombiano para ${fname}.
+
+PERFIL:
+- Edad: ${edad} | Sexo: ${sexo} | IMC: ${imc?imc.toFixed(1):'N/A'} | Ciudad: ${ciudad} | EPS: ${eps||'no especificada'}
+- Trabajo: ${trabajo} | Actividad: ${act} | Tipo ejercicio: ${sel['tipo_ej']||'?'}
+- Sueño: ${sue} | Estrés: ${str} | Emocional: ${emocional} | Apoyo mental: ${sel['apoyo']||'?'}
+- Dieta: ${dieta} | Agua: ${agua} | Alergias: ${alergias}
+- Hábitos negativos: ${chks.filter(c=>['fumador','ex_fumador','alcohol','sedentario_h','pantallas','cafeina'].includes(c)).join(', ')||'ninguno'}
+- Condiciones: ${chks.filter(c=>['hipotiroidismo','diabetes_dx','hta_dx','ansiedad_dx','sop','colesterol_dx'].includes(c)).join(', ')||'ninguna'} | Otra: ${condicion}
+- Medicamentos: ${meds}
+- Antecedentes fam: ${chks.filter(c=>c.startsWith('fam_')).join(', ')||'ninguno'}
+${sexo==='femenino'?`- Ciclo: ${ciclo} | Duración período: ${dur_p} | Flujo: ${flujo} | Síntomas período: ${sintomas_p} | Anticoncepción: ${anticonc} | Papanicolau: ${pap}`:''}
+- Último chequeo: ${chequeo}
+- Objetivos: ${chks.filter(c=>c.startsWith('obj_')).join(', ')||'preventivos'}
+- Nota: ${nota||'ninguna'}
+- Puntaje: ${score}/100
+
+Genera recomendaciones MUY específicas para este perfil. Si hay síntomas menstruales, inclúyelos en las recomendaciones.
+
+Responde SOLO con JSON sin markdown:
+{"recomendaciones":["rec1 específica","rec2","rec3","rec4","rec5","rec6"],"mensaje":"mensaje motivador personal para ${fname} máx 12 palabras"}`;
+
+  let recs=[],msg=`${fname}, tu salud es tu mayor inversión.`;
+  try{
+    const r=await fetch('/api/assess',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt})});
+    const d=await r.json();
+    let txt=d.content[0].text.trim().replace(/```json|```/g,'').trim();
+    const parsed=JSON.parse(txt);
+    recs=parsed.recomendaciones||[];msg=parsed.mensaje||msg;
+  }catch(e){
+    recs=[`${fname}, agenda tu chequeo preventivo este mes.`,'Incorpora 30 min de caminata 4 veces por semana.','Practica respiración profunda antes de dormir.','Hidratarte bien (2L/día) mejora tu energía.','Considera un perfil lipídico y glicemia.','Conecta con sofía semanalmente para seguimiento.'];
+  }
+
+  clearInterval(gi_int);
+  const pd={user_id:currentUser.id,score,imc:imc?parseFloat(imc.toFixed(1)):null,edad,sexo,peso,estatura:est,ciudad,eps,condicion,medicamentos:meds,alergias,actividad:act,sueno:sue,estres:str,emocional,apoyo_mental:sel['apoyo']||'',trabajo,dieta,agua,habitos:chks,antecedentes:chks,ciclo:ciclo||null,duracion_periodo:dur_p||null,flujo:flujo||null,sintomas_periodo:sintomas_p,anticonc:anticonc||null,pap:pap||null,chequeo,objetivo:chks.filter(c=>c.startsWith('obj_')).join(','),nota,recomendaciones:recs,msg,updated_at:new Date().toISOString()};
+  try{await sb.from('sofia_profiles').upsert(pd,{onConflict:'user_id'});}catch(e){}
+  userProfile=pd;showDash(pd);goApp('home');
+}
+
+function initChat(fname){
+  chatHist=[];
+  const fem=userProfile.sexo==='femenino';
+  const chips=fem?['¿Cómo mejorar mi ciclo?','¿Qué exámenes necesito?','Tengo dolor menstrual','¿Cómo reducir el estrés?']:['¿Qué exámenes necesito?','¿Cómo mejorar mi sueño?','Tengo mucho estrés','¿Qué debo comer?'];
+  document.getElementById('chat-chips').innerHTML=chips.map(c=>`<div class="chip" onclick="sendChip('${c}')">${c}</div>`).join('');
+  const greeting=userProfile.score?`Hola ${fname}! Tu puntaje es ${userProfile.score}/100. ${userProfile.score>=70?'¡Vas muy bien! 🌟':'Juntas podemos mejorar 🌱'} ¿En qué te ayudo?`:`Hola ${fname}! Soy sofía, tu asistente de salud preventiva 🌿 ¿En qué te puedo ayudar?`;
+  document.getElementById('chat-msgs').innerHTML=`<div class="msg sofia">${greeting}</div>`;
+}
+
+function sendChip(t){document.getElementById('chat-in').value=t;sendMsg();}
+
+async function sendMsg(){
+  const inp=document.getElementById('chat-in');
+  const text=inp.value.trim();if(!text)return;inp.value='';
+  const msgs=document.getElementById('chat-msgs');
+  msgs.innerHTML+=`<div class="msg user">${text}</div>`;
+  const tid='t'+Date.now();
+  msgs.innerHTML+=`<div class="msg sofia" id="${tid}"><div class="dots"><span></span><span></span><span></span></div></div>`;
+  msgs.scrollTop=msgs.scrollHeight;
+  chatHist.push({role:'user',content:text});
+  const fname=(currentUser?.user_metadata?.full_name||'').split(' ')[0];
+  const p=userProfile;
+  const sys=`Eres sofía, asistente cálida y experta en salud preventiva para colombianos. Das consejos de medicina preventiva. SIEMPRE recomiendas consultar médicos para diagnósticos. Respondes en español colombiano, concisa (máx 3 párrafos), cálida y motivadora. Nunca das diagnósticos.
+
+PERFIL DE ${fname}: Edad ${p.edad||'?'}, sexo ${p.sexo||'?'}, IMC ${p.imc||'?'}, actividad ${p.actividad||'?'}, sueño ${p.sueno||'?'}, estrés ${p.estres||'?'}, dieta ${p.dieta||'?'}, medicamentos ${p.medicamentos||'ninguno'}, condición ${p.condicion||'ninguna'}${p.sexo==='femenino'?`, ciclo ${p.ciclo||'?'}, flujo ${p.flujo||'?'}, síntomas período ${p.sintomas_periodo||'?'}`:''}. Puntaje ${p.score||'sin evaluar'}/100.
+
+Historial reciente:
+${chatHist.slice(-4).map(m=>`${m.role==='user'?fname:'sofía'}: ${m.content}`).join('\n')}
+${fname}: ${text}
+sofía:`;
+
+  let reply='Tuve un problema de conexión. ¡Inténtalo de nuevo!';
+  try{
+    const r=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:[{role:'user',content:text}],system:sys})});
+    const d=await r.json();
+    if(d.content&&d.content[0])reply=d.content[0].text;
+  }catch(e){}
+  chatHist.push({role:'assistant',content:reply});
+  document.getElementById(tid)?.remove();
+  msgs.innerHTML+=`<div class="msg sofia">${reply}</div>`;
+  msgs.scrollTop=msgs.scrollHeight;
+}
+
+(async()=>{
+  const {data:{session}}=await sb.auth.getSession();
+  if(session?.user)await loadUser(session.user);
+  else showLogin();
+  sb.auth.onAuthStateChange(async(_,session)=>{if(session?.user&&!currentUser)await loadUser(session.user);});
+})();
+</script>
+</body>
+</html>
