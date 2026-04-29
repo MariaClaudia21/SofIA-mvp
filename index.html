@@ -782,8 +782,16 @@ sofía:`;
   try{
     const r=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:[{role:'user',content:text}],system:sys})});
     const d=await r.json();
-    if(d.content&&d.content[0])reply=d.content[0].text;
-  }catch(e){}
+    if(d.content&&d.content[0]){
+      reply=d.content[0].text;
+    }else if(d.error==='upstream_error'){
+      reply='Hubo un problema con el servicio de IA (error '+d.detail+'). Intenta en unos segundos.';
+      console.error('API error:',d);
+    }else if(d.error){
+      reply='No pude conectarme con sofía ahora mismo. ¡Inténtalo de nuevo!';
+      console.error('API error:',d);
+    }
+  }catch(e){console.error('Chat fetch error:',e);}
   chatHist.push({role:'assistant',content:reply});
   document.getElementById(tid)?.remove();
   msgs.innerHTML+=`<div class="msg sofia">${reply}</div>`;
